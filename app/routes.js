@@ -4,6 +4,7 @@
 require( '../config/database' );
 var Project = require( './models/project' );
 var Board = require( './models/board' );
+var Card = require( './models/card' );
 var mongoose = require( 'mongoose' );
 
 module.exports = function(app, passport) {
@@ -77,12 +78,6 @@ module.exports = function(app, passport) {
       });
     });
 
-    app.get('/projects/action/createBoard', isLoggedIn, function(req, res) {
-      res.render('projects/action/createBoard.ejs', {
-        user : req.user,
-        projectName: req.query.projectName
-      });
-    });
 
     // process the project creation form
     app.post('/projects/action/createProject', isLoggedIn, function(req, res) {
@@ -93,6 +88,13 @@ module.exports = function(app, passport) {
         owner        : req.user._id,
       }).save( function( err, project, count ){
         res.redirect( '/' );
+      });
+    });
+
+    app.get('/projects/action/createBoard', isLoggedIn, function(req, res) {
+      res.render('projects/action/createBoard.ejs', {
+        user : req.user,
+        projectName: req.query.projectName
       });
     });
 
@@ -115,6 +117,37 @@ module.exports = function(app, passport) {
       });
     });
 
+    app.get('/projects/action/createCard', isLoggedIn, function(req, res) {
+      res.render('projects/action/createCard.ejs', {
+        user : req.user,
+        projectName: req.query.projectName,
+        boardName: req.query.boardName,
+        columnName: req.query.columnName
+      });
+    });
+
+    app.post('/projects/action/createCard', isLoggedIn, function(req, res) {
+      projectName = req.body.projectName;
+      new Card({
+        name: req.body.name,
+        projectName: req.body.projectName,
+        boardName: req.body.boardName,
+        columnName: req.body.columnName
+      }).save( function( err, card, count ){
+        console.log("Card " + card.name + " added to " + projectName + " under " + req.body.columnName);
+        Board.findOneAndUpdate(
+          { "name": req.body.boardName },
+          { $push: { "cards": card._id }},
+          function(err, board) {
+            if (err) console.log(err);
+          }
+        )
+        res.redirect( '/projects/' + projectName );
+      });
+    });
+
+
+
     // delete a project
     app.get('/projects/action/delete', isLoggedIn, function(req, res) {
       console.log("Deleting Project with ID '" + req.query.id + "'");
@@ -134,10 +167,9 @@ module.exports = function(app, passport) {
         if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
           project.membership.boards.forEach(function(element, index, array) {
             Board.findOne({ _id: element }, function(err, board) {
-              console.log("Found board " + board);
               boards.push(board);
-              console.log("Boards is now - " + boards);
               res.render('projects/project.ejs', {
+                // Need to populate cards here to pass to client
                 boards: [ board ],
                 project: project
               });
@@ -145,6 +177,10 @@ module.exports = function(app, passport) {
           });
 
           console.log("Boards: " + boards);
+        } else {
+          res.render('projects/project.ejs', {
+            project: project
+          });
         };
       });
     });

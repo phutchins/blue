@@ -1,8 +1,25 @@
 <!-- views/projects/project.ejs -->
 <!doctype html>
-<script type="text/javascript" src="/js/sortable.js"></script>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
+  <title>jQuery UI Sortable - Default functionality</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+  #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 44px; }
+  #sortable li span { position: absolute; margin-left: -1.3em; martin-right: 1em; }
+  </style>
+  <script>
+  $(function() {
+    $( "#sortable" ).sortable();
+    $( "#sortable" ).disableSelection();
+  });
+  </script>
+
   <title><%= project.name %></title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
@@ -19,7 +36,7 @@
     <a href="/projects/action/createBoard?projectName=<%= project.name %>" class="btn btn-default btn-sm"> add</a>
   </div>
 
-  <%- include ../boards/index.ejs %>
+  <%- include ./boards/index.ejs %>
 
 </div>
 </body>

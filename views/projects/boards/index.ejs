@@ -1,0 +1,9 @@
+<div class="row">
+  <% if ( typeof(boards) != 'undefined' ) { %>
+    <% boards.forEach( function ( board ) { %>
+      <%- include board.ejs %>
+    <% }); %>
+  <% } else { %>
+    <div class="header">No boards. Create one to get started!</div>
+  <% }; %>
+</div>

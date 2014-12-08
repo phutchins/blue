@@ -1,0 +1,16 @@
+<div class="header"><%= board.name %></div>
+<% board.columns.forEach( function ( column ) { %>
+  <div class="col-sm-4">
+    <div class="well">
+      <div class="column">
+        <div class="header"><%= column %></div>
+        <ul id="sortable">
+          <% board.cards.forEach( function ( card ) { %>
+            <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span><%= card %></li>
+          <% }); %>
+        </ul>
+        <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="btn btn-default btn-sm"> add</a>
+      </div>
+    </div>
+  </div>
+<% }); %>

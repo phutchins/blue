@@ -2,17 +2,12 @@
 // load the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var Card = require( './card' );
 
 var comment = new Schema({
   author: { type: String },
   content: { type: String },
   date: { type: Date, default: Date.now() }
-});
-
-var item = new Schema({
-  name: { type: String },
-  description: { type: String },
-  comments: [comment]
 });
 
 // define the schema for our user model
@@ -21,7 +16,7 @@ var boardSchema = new Schema({
   owner: { type: String },
   last_update: { type: Date },
   columns: { type: [String], default: ["todo", "doing", "done"] },
-  items: [item]
+  cards: [ { type: String } ]
 
 });
 
