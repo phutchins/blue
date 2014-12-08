@@ -1,0 +1,69 @@
+<!-- views/projects/index.ejs -->
+<!doctype html>
+<html>
+<head>
+  <title>Blue Projects</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+  <style>
+    body        { padding-top:80px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header text-center">
+    <h1><span class="fa fa-anchor"></span> Projects</h1>
+    <a href="/logout" class="btn btn-default btn-sm"> Logout</a>
+    <a href="/projects/action/createProject" class="btn btn-default btn-sm"> Create</a>
+  </div>
+
+  <div class="row">
+
+    <% projects.forEach( function( project ){ %>
+      <!-- <a style="display:block" href="/projects/<%= project.name %>"> -->
+      <div class="col-sm-6">
+        <div class="well">
+          <h3><span class="fa fa-user"></span> <a href="/projects/<%= project.name %>"><%= project.name %></a></h3>
+            <p>
+              <strong> <%= project.description %></strong><br>
+              <strong>Owner</strong>: <%= project.owner %><br><br>
+              <!-- <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="/projects/action/edit">Edit</a></li>
+                  <li><a href="/projects/action/share">Share</a></li>
+                  <li class="divider"></li>
+                  <li><a href="/projects/action/delete?id=<%= project.id %>">Delete</a></li>
+                </ul>
+              </div> -->
+              <a data-method="DELETE" href="/projects/action/delete?id=<%= project.id %>">delete</a>
+            </p>
+        </div>
+      </div>
+      <!-- </a> -->
+    <% }); %>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-show="displayForm">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+
+            <div class="form-group">  <input type="text" ng-model="employee.name"  class="form-control" placeholder="Name"/></div>
+            <div class="form-group"><input type="text" ng-model="employee.email"  class="form-control" placeholder="Email"/></div>
+            <div class="form-group"> <input type="text" ng-model="employee.phone"  class="form-control" placeholder="Phone"/></div>
+
+        </div>
+        <div class="modal-footer">
+           <button class="btn btn-primary" ng-click="saveItem()">Save</button>
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
