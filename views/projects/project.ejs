@@ -11,7 +11,6 @@
   #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
   #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 44px; }
   #sortable li span { position: absolute; margin-left: -1.3em; martin-right: 1em; }
-  <link rel="stylesheet" href="/css/sortable.css">
   </style>
   <script>
   $(function() {
@@ -20,6 +19,7 @@
   });
   </script>
 
+  <link rel="stylesheet" href="/css/sortable.css">
   <title><%= project.name %></title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
@@ -28,7 +28,7 @@
   </style>
 </head>
 <body>
-<div class="container">
+<!-- <div class="container"> -->
   <div class="page-header text-center">
     <h1><span class="fa fa-anchor"></span> <%= project.name %></h1>
     <a href="/logout" class="btn btn-default btn-sm"> Logout</a>
@@ -39,6 +39,6 @@
 
   <%- include ./boards/index.ejs %>
 
-</div>
+<!-- </div> -->
 </body>
 </html>
