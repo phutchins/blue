@@ -1,13 +1,13 @@
 <div class="h1"><%= board.name %></div>
 <% board.columns.forEach( function ( column ) { %>
  <div class="portlet-column">
-   <div class="h3"><%= column %></div>
+   <div class="board-column-name"><%= column %></div>
    <ul id="sortable">
      <% board.cards.forEach( function ( card ) { %>
        <div class="portlet">
          <li>
            <div class="portlet-header">
-             <span class="ui-icon ui-icon-arrowthick-2-n-s"></span><%= cards[card].name %>
+             <span class="lead"><%= cards[card].name %></span>
            </div>
            <div class="portlet-content">
            </div>
@@ -15,7 +15,7 @@
        </div>
      <% }); %>
    </ul>
-   <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="btn btn-default btn-sm"> add</a>
+   <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="add-card"> Add a card...</a>
  </div>
 <% }); %>
 </div>

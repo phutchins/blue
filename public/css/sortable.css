@@ -38,7 +38,7 @@ body {
    border-radius: 3px;
 }
 .portlet-header {
-   padding: 0.2em 0.3em;
+   padding: 0.1em 0.1em;
    margin-bottom: 0.5em;
    position: relative;
 }
@@ -58,12 +58,47 @@ body {
 }
 
 .portlet-column {
+  display: inline-block;
+  width: 300px;
   margin: 4px;
-   background: #ccc;
-   border-radius: 5px;
-   padding: 10px;
+  background: #ccc;
+  border-radius: 5px;
+  padding: 10px;
 }
 .board {
-  display: inline-block;
   white-space: nowrap;
+}
+.add-card {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  color: #8c8c8c;
+  display: block;
+  -moz-box-flex: 0;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+  margin: 2px -3px -3px;
+  padding: 7px 10px;
+  position: relative;
+  text-decoration: none;
+}
+.board-column-name {
+  -webkit-margin-before: 0.83em;
+  -webkit-margin-after: 0.83em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  font-weight: bold;
+  display: inline;
+  font-size: 15px;
+  line-height: 18px;
+  margin: 0;
+  min-height: 19px;
+  margin-bottom: 5px;
+  min-width: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
