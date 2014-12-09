@@ -177,8 +177,10 @@ module.exports = function(app, passport) {
                   cards[card._id] = card;
                   cardsCallback();
                 });
+              }, function(err) {
+                if (err) { return console.log(err); }
+                boardsCallback();
               });
-              boardsCallback();
             });
           }, function(err) {
             if (err) { return console.log(err); }
