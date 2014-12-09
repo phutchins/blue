@@ -1,11 +1,12 @@
 // app/routes.js
 // Todo -
 // Look into route separation: https://github.com/strongloop/express/blob/master/examples/route-separation/index.js
-require( '../config/database' );
-var Project = require( './models/project' );
-var Board = require( './models/board' );
-var Card = require( './models/card' );
-var mongoose = require( 'mongoose' );
+require('../config/database');
+var Project = require('./models/project');
+var Board = require('./models/board');
+var Card = require('./models/card');
+var mongoose = require('mongoose');
+var async = require('async');
 
 module.exports = function(app, passport) {
 
@@ -162,20 +163,32 @@ module.exports = function(app, passport) {
     app.get('/projects/:projectName', isLoggedIn, function(req, res) {
       projectName = req.params.projectName;
       console.log("Loading board " + projectName);
-      var boards = [];
       Project.findOne({ name: projectName }, function(err, project) {
         if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
-          project.membership.boards.forEach(function(element, index, array) {
-            Board.findOne({ _id: element }, function(err, board) {
+          var boards = [];
+          var cards = {};
+          async.each(project.membership.boards, function(boardId, boardsCallback) {
+            Board.findOne({ _id: boardId }, function(err, board) {
+              console.log("looping board " + board.name);
               boards.push(board);
-              res.render('projects/project.ejs', {
-                // Need to populate cards here to pass to client
-                boards: [ board ],
-                project: project
+              async.each(board.cards, function(cardId, cardsCallback) {
+                Card.findOne({ _id: cardId }, function(err, card) {
+                  console.log("looping card " + card.name);
+                  cards[card._id] = card;
+                  cardsCallback();
+                });
               });
+              boardsCallback();
+            });
+          }, function(err) {
+            if (err) { return console.log(err); }
+            console.log("loop callback");
+            res.render('projects/project.ejs', {
+              cards: cards,
+              boards: boards,
+              project: project
             });
           });
-
           console.log("Boards: " + boards);
         } else {
           res.render('projects/project.ejs', {

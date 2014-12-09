@@ -6,7 +6,7 @@
         <div class="header"><%= column %></div>
         <ul id="sortable">
           <% board.cards.forEach( function ( card ) { %>
-            <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span><%= card %></li>
+            <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span><%= cards[card] %></li>
           <% }); %>
         </ul>
         <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="btn btn-default btn-sm"> add</a>
