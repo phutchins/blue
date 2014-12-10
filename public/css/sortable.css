@@ -61,6 +61,7 @@ body {
   display: inline-block;
   width: 300px;
   margin: 4px;
+  vertical-align: top;
   background: #ccc;
   border-radius: 5px;
   padding: 10px;

@@ -128,7 +128,8 @@ module.exports = function(app, passport) {
     });
 
     app.post('/projects/action/createCard', isLoggedIn, function(req, res) {
-      projectName = req.body.projectName;
+      var projectName = req.body.projectName;
+      var columnName = req.body.columnName;
       new Card({
         name: req.body.name,
         projectName: req.body.projectName,
@@ -138,7 +139,7 @@ module.exports = function(app, passport) {
         console.log("Card " + card.name + " added to " + projectName + " under " + req.body.columnName);
         Board.findOneAndUpdate(
           { "name": req.body.boardName },
-          { $push: { "cards": card._id }},
+          { $push: { "cards": {"cardId": card._id, "columnName": req.body.columnName} } },
           function(err, board) {
             if (err) console.log(err);
           }
@@ -171,8 +172,10 @@ module.exports = function(app, passport) {
             Board.findOne({ _id: boardId }, function(err, board) {
               console.log("looping board " + board.name);
               boards.push(board);
-              async.each(board.cards, function(cardId, cardsCallback) {
-                Card.findOne({ _id: cardId }, function(err, card) {
+              async.each(board.cards, function(card, cardsCallback) {
+                console.log("card: " + card);
+                console.log("Looking for card with id " + card.cardId);
+                Card.findOne({ _id: card.cardId }, function(err, card) {
                   console.log("looping card " + card.name);
                   cards[card._id] = card;
                   cardsCallback();

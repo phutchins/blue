@@ -16,8 +16,10 @@ var boardSchema = new Schema({
   owner: { type: String },
   last_update: { type: Date },
   columns: { type: [String], default: ["todo", "doing", "done"] },
-  cards: [ { type: String } ]
-
+  cards: [{
+    cardId: String,
+    columnName: String
+  }]
 });
 
 // create the model for users and expose it to our app
