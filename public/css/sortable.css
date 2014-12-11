@@ -32,6 +32,7 @@ body {
    position: absolute;
 }
 .portlet {
+  width: 100%;
    margin: 0 1em 1em 0;
    padding: 0.3em;
    background: #fff;
@@ -41,6 +42,7 @@ body {
    padding: 0.1em 0.1em;
    margin-bottom: 0.5em;
    position: relative;
+   white-space: normal;
 }
 .portlet-toggle {
    position: absolute;
@@ -102,4 +104,8 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   word-wrap: break-word;
+}
+.card-name {
+  word-wrap: normal;
+  width: 100%;
 }
