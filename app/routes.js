@@ -163,7 +163,7 @@ module.exports = function(app, passport) {
 
     app.get('/projects/:projectName', isLoggedIn, function(req, res) {
       projectName = req.params.projectName;
-      console.log("Loading board " + projectName);
+      console.log("Loading project " + projectName);
       Project.findOne({ name: projectName }, function(err, project) {
         if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
           var boards = [];

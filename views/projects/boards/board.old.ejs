@@ -1,18 +1,19 @@
 <div class="h1"><%= board.name %></div>
-<section id="connected">
 <% board.columns.forEach( function ( column ) { %>
  <div class="portlet-column">
    <div class="board-column-name"><%= column %></div>
-   <ul id="<%= column %>" class="connected sortable 1list">
+   <ul id="sortable">
      <% board.cards.forEach( function ( card ) { %>
        <% if (card.columnName === column) { %>
-           <li draggable=true class="portlet">
+         <div class="portlet">
+           <li>
              <div class="portlet-header">
                <span class="lead card-name"><%= cards[card.cardId].name %></span>
              </div>
              <div class="portlet-content">
              </div>
            </li>
+         </div>
        <% } %>
      <% }); %>
    </ul>
