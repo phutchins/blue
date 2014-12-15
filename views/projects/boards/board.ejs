@@ -7,11 +7,13 @@
      <% board.cards.forEach( function ( card ) { %>
        <% if (card.columnName === column) { %>
            <li draggable=true class="portlet">
-             <div class="portlet-header">
-               <span class="lead card-name"><%= cards[card.cardId].name %></span>
-             </div>
-             <div class="portlet-content">
-             </div>
+             <a style="display:block" href="/projects/action/editCard?cardId=<%= card.cardId %>&projectName=<%= project.name %>">
+               <div class="portlet-header">
+                 <span class="lead card-name"><%= cards[card.cardId].name %></span>
+               </div>
+               <div class="portlet-content">
+               </div>
+             </a>
            </li>
        <% } %>
      <% }); %>

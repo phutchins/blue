@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var cardSchema = new Schema({
   name: { type: String },
-  description: { type: String },
+  description: { type: String, default: "" },
   membership: {
     column: { type: String },
     owner: { type: String },

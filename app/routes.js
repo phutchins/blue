@@ -148,7 +148,31 @@ module.exports = function(app, passport) {
       });
     });
 
+    app.get('/projects/action/editCard', isLoggedIn, function(req, res) {
+      console.log("Edit Card (GET): Looking up card with ID '" + req.query.cardId + "'");
+      Card.findById( req.query.cardId, function ( err, card ) {
+        console.log("Edit Card (GET): Found card " + card);
+        res.render('projects/action/editCard.ejs', {
+          user: req.user,
+          cardId: req.query.cardId,
+          projectName: req.query.projectName,
+          cardName: card.name,
+          cardDescription: card.description
+        });
+      });
+    });
 
+    app.post('/projects/action/editCard', isLoggedIn, function(req, res) {
+      console.log("Edit Card (POST): Saving updates for card with id '" + req.body.cardId + "'");
+      Card.findOneAndUpdate(
+        { "_id": req.body.cardId },
+        { $set: { "name": req.body.cardName, "description": req.body.cardDescription }, upsert: true },
+        function(err, board) {
+          if (err) console.log(err);
+        }
+      )
+      res.redirect( '/projects/' + req.body.projectName );
+    });
 
     // delete a project
     app.get('/projects/action/delete', isLoggedIn, function(req, res) {
@@ -173,8 +197,6 @@ module.exports = function(app, passport) {
               console.log("looping board " + board.name);
               boards.push(board);
               async.each(board.cards, function(card, cardsCallback) {
-                console.log("card: " + card);
-                console.log("Looking for card with id " + card.cardId);
                 Card.findOne({ _id: card.cardId }, function(err, card) {
                   console.log("looping card " + card.name);
                   cards[card._id] = card;
