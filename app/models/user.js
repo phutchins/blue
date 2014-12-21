@@ -30,7 +30,7 @@ var userSchema = mongoose.Schema({
         name         : String
     },
     session          : {
-      lastViewedBoard : String
+      lastViewed     : String
     }
 
 });

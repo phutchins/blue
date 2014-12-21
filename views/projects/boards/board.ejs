@@ -7,7 +7,7 @@
      <% board.cards.forEach( function ( card ) { %>
        <% if (card.columnName === column) { %>
            <li draggable=true class="portlet">
-             <a style="display:block" href="/projects/action/editCard?cardId=<%= card.cardId %>&projectName=<%= project.name %>">
+           <a style="display:block" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
                <div class="portlet-header">
                  <span class="lead card-name"><%= cards[card.cardId].name %></span>
                </div>

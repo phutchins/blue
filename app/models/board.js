@@ -10,16 +10,18 @@ var comment = new Schema({
   date: { type: Date, default: Date.now() }
 });
 
+var Card = new Schema({
+  cardId: String,
+  columnName: String
+});
+
 // define the schema for our user model
 var boardSchema = new Schema({
   name: { type: String },
   owner: { type: String },
   last_update: { type: Date },
   columns: { type: [String], default: ["todo", "doing", "done"] },
-  cards: [{
-    cardId: String,
-    columnName: String
-  }]
+  cards: [Card],
 });
 
 // create the model for users and expose it to our app

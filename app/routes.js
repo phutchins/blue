@@ -156,6 +156,7 @@ module.exports = function(app, passport) {
           user: req.user,
           cardId: req.query.cardId,
           projectName: req.query.projectName,
+          boardName: req.query.boardName,
           cardName: card.name,
           cardDescription: card.description
         });
@@ -174,6 +175,46 @@ module.exports = function(app, passport) {
       res.redirect( '/projects/' + req.body.projectName );
     });
 
+    app.get('/cards/deleteCard', isLoggedIn, function(req, res) {
+      console.log("Delete Card (GET): Deleting card with ID '" + req.query.cardId + "'");
+      // Add a message here to populate message field on board or project page with status of result
+      Board.findOne( { "name": req.query.boardName }, function(err, board) {
+        if (!board) {
+          console.log("Delete Card (GET): No board found");
+        }
+        console.log("Delete Card (GET): Found board '" + board.name + "'");
+        console.log("Delete Card (GET): Cards that belong to board '" + board.cards + "'");
+        console.log("Delete Card (GET): Looking for card with cardId '" + req.query.cardId + "'");
+        var i = 0;
+        var found = false;
+        var id = null;
+        for (i = 0; i < board.cards.length; i++) {
+          var card = board.cards[i];
+          if (card.cardId === req.query.cardId) {
+            id = board.cards[i]._id;
+            found = true;
+            break;
+          }
+        };
+        //var idx = board.cards ? board.cards.cardId.indexOf(req.query.cardId) : -1;
+        if (found) {
+          console.log("Delete Card (GET): Ready to splice");
+          var doc = board.cards.id(id).remove();
+          board.save(function(err) {
+            if (err) { console.log(err); };
+            console.log("Delete Card (GET): Removing card");
+            Card.remove({ _id: req.query.cardId },
+              function(err) {
+                console.log("Delete Card (GET): Removed card '" + req.query.cardId + "'");
+                res.redirect('/projects/' + req.query.projectName || '/');
+              }
+            );
+          });
+        };
+      });
+    });
+
+
     // delete a project
     app.get('/projects/action/delete', isLoggedIn, function(req, res) {
       console.log("Deleting Project with ID '" + req.query.id + "'");
@@ -186,7 +227,7 @@ module.exports = function(app, passport) {
     });
 
     app.get('/projects/:projectName', isLoggedIn, function(req, res) {
-      projectName = req.params.projectName;
+      var projectName = req.params.projectName;
       console.log("Loading project " + projectName);
       Project.findOne({ name: projectName }, function(err, project) {
         if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
@@ -196,10 +237,15 @@ module.exports = function(app, passport) {
             Board.findOne({ _id: boardId }, function(err, board) {
               console.log("looping board " + board.name);
               boards.push(board);
-              async.each(board.cards, function(card, cardsCallback) {
-                Card.findOne({ _id: card.cardId }, function(err, card) {
-                  console.log("looping card " + card.name);
-                  cards[card._id] = card;
+              async.each(board.cards, function(cardList, cardsCallback) {
+                console.log("looping card with ID '" + cardList.cardId + "'");
+                Card.findOne({ _id: cardList.cardId }, function(err, card) {
+                  if (err) { console.log(err) };
+                  if (!card) {
+                    console.log("Could not look up card with id '" + cardList.cardId + "'");
+                  } else {
+                    cards[card._id] = card;
+                  }
                   cardsCallback();
                 });
               }, function(err) {
@@ -210,6 +256,8 @@ module.exports = function(app, passport) {
           }, function(err) {
             if (err) { return console.log(err); }
             console.log("loop callback");
+            req.user.session.lastProject = req.params.projectName;
+            console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
             res.render('projects/project.ejs', {
               cards: cards,
               boards: boards,
