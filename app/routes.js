@@ -226,6 +226,11 @@ module.exports = function(app, passport) {
       });
     });
 
+    // Move a card to a different column
+    app.get('/projects/action/moveCard', isLoggedIn, function(req, res) {
+      console.log("Move Card (GET): Moving card with id '" + res.query.cardId + "' on board '" + res.query.boardName + "' to '" + res.query.columnName + "'");
+    });
+
     app.get('/projects/:projectName', isLoggedIn, function(req, res) {
       var projectName = req.params.projectName;
       console.log("Loading project " + projectName);
