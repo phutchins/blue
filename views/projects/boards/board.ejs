@@ -1,12 +1,12 @@
-<div class="h1"><%= board.name %></div>
-<section id="connected">
+<div class="h1" id="<%= board.name %>"><%= board.name %></div>
+<section id="connected" name="<%= board.name %>">
 <% board.columns.forEach( function ( column ) { %>
  <div class="portlet-column">
    <div class="board-column-name"><%= column %></div>
-   <ul id="<%= column %>" class="connected sortable 1list">
+   <ul id="<%= column %>" class="connected sortable <%= column %>">
      <% board.cards.forEach( function ( card ) { %>
        <% if (card.columnName === column) { %>
-           <li draggable=true class="portlet">
+         <li draggable=true class="portlet asdf" id="<%= card.cardId %>">
            <a style="display:block" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
                <div class="portlet-header">
                  <span class="lead card-name"><%= cards[card.cardId].name %></span>

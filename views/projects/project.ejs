@@ -120,21 +120,48 @@
       $('#todo, #doing, #done').sortable({
         connectWith: '.connected'
       });
-      $('.sortable').sortable().bind('sortupdate', function() {
-        /*
+    });
+    //$('.sortable').sortable({
+    //    items: 'li' ,
+    //    forcePlaceholderSize: true,
+    //    placeholder : '<tr><td colspan="7">&nbsp;</td></tr>'
+    //});
+    $('.sortable').sortable().bind('sortupdate', function(err, ui) {
+      /*
 
-        This event is triggered when the user stopped sorting and the DOM position has changed.
+      This event is triggered when the user stopped sorting and the DOM position has changed.
 
-        ui.item contains the current dragged element.
-        ui.item.index() contains the new index of the dragged element
-        ui.oldindex contains the old index of the dragged element
-        ui.startparent contains the element that the dragged item comes from
-        ui.endparent contains the element that the dragged item was added to
+      ui.item contains the current dragged element.
+      ui.item.index() contains the new index of the dragged element
+      ui.oldindex contains the old index of the dragged element
+      ui.startparent contains the element that the dragged item comes from
+      ui.endparent contains the element that the dragged item was added to
 
-        */
-        $.GET('/projects/action/moveCard?cardId=' + card.cardId + '&boardName=' + board.name + '&columnName=' + ui.endparent', {data: 'here'}, function(data){ /* what to do with the data returned */ })
+      */
+      //$.GET('/projects/action/moveCard', {cardId: card.cardId, boardName: board.name, columnName: ui.endparent}, function(data){
+      console.log(ui);
+      console.log(ui.item);
+      console.log("parent node id:" + ui.item[0].parentNode.id);
+      console.log("item id:" + ui.item[0].id);
+      console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
+      console.log("board: " + ui.item[0].parentNode.parentNode.parentNode.previousElementSibling.outerText);
 
+      var order = $('ul.sortable li').map(function(){
+          console.log($(this).data("id"));
+          return $(this).data("id");
+      }).get();
+
+      $.ajax({
+        type: "POST",
+        //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
+        url: "/projects/action/moveCard",
+        dataType: "json",
+        data: {cardId: ui.item[0].id, newColumn: ui.item[0].parentNode.id, boardName: ui.item[0].parentNode.parentNode.parentNode.previousElementSibling.outerText},
+        success: function(order){
+          console.log(order)
+        }
       });
+
     });
   </script>
 </body>
