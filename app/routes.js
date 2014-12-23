@@ -228,41 +228,12 @@ module.exports = function(app, passport) {
 
     // Move a card to a different column
     app.post('/projects/action/moveCard', isLoggedIn, function(req, res) {
-      //console.log("Move Card (GET): Moving card with id '" + res.query.cardId + "' on board '" + res.query.boardName + "' to '" + res.query.columnName + "'");
       console.log("Move Card (POST): boardName: " + req.body.boardName + " cardId: " + req.body.cardId + " newColumn: " + req.body.newColumn);
       // Need to move to finding these boards by ID
-      Board.findOneAndUpdate( { 'cards.cardId': req.body.boardName }, {$set: { 'cards.$.column': req.body.newColumn } },
-        function(err, board) {
-        if (!board) {
-          console.log("Move Card (POST): No board found");
-        } else {
-          console.log("Move Card (POST): Found board '" + board.name + "'");
-          var found = false;
-          var id = null;
-          for (i = 0; i < board.cards.length; i++) {
-            var card = board.cards[i];
-            if (card.cardId === req.body.cardId) {
-              id = board.cards[i]._id;
-              found = true;
-              break;
-            }
-          };
-          if (found) {
-            console.log("Move Card (POST): Found card with id '" + req.body.cardId + "'");
-            console.log("Move Card (POST): orig card -");
-            console.log(board.cards.id(id));
-            {$set: { ''cards.$.column': req.body.newColumn } }
-            board.cards[0](id).set(id, { 'column': req.body.newColumn } );
-            //board.cards[0].set(id, { 'column': id(id).column = req.body.newColumn;
-
-            board.save(function(err) {
-              console.log("Move Card (POST): new card -");
-              console.log(board.cards.id(id));
-              if (err) { console.log(err); };
-              console.log("Move Card (POST): Moved card with id '" + req.body.cardId + "' to column '" + req.body.newColumn + "'");
-            });
-          }
-        }
+      Board.findOneAndUpdate( { 'name': req.body.boardName, 'cards.cardId': req.body.cardId }, {$set: { 'cards.$.columnName': req.body.newColumn } }, {new: true, upsert: false}, function(err, board) {
+        if (err) { console.log(err); };
+        console.log("Move Card (POST): Found board with name '" + board.name + "'");
+        console.log("Move Card (POST): Moved card with id '" + req.body.cardId + "' to column '" + req.body.newColumn + "'");
       });
     });
 
