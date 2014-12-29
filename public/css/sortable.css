@@ -29,6 +29,9 @@ body {
    padding-bottom: 100px;
    position: absolute;
 }
+.dropzone {
+  min-height: 15px;
+}
 .portlet {
   width: 100%;
    margin: 0 1em 1em 0;
@@ -37,6 +40,9 @@ body {
    border-radius: 3px;
 }
 .portlet-header {
+  padding-top: 10px;
+  padding-bottom: 10px:
+  min-height: 30px;
    padding: 0.1em 0.1em;
    margin-bottom: 0.5em;
    position: relative;

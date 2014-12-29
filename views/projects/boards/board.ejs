@@ -3,7 +3,7 @@
 <% board.columns.forEach( function ( column ) { %>
  <div class="portlet-column">
    <div class="board-column-name"><%= column %></div>
-   <ul id="<%= column %>" class="connected sortable <%= column %>">
+   <ul id="<%= column %>" class="connected sortable dropzone <%= column %>">
      <% board.cards.forEach( function ( card ) { %>
        <% if (card.columnName === column) { %>
          <li draggable=true class="portlet asdf" id="<%= card.cardId %>">

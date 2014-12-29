@@ -118,14 +118,20 @@
 
     $(function() {
       $('#todo, #doing, #done').sortable({
-        connectWith: '.connected'
+        connectWith: '.connected',
+        dropOnEmpty: true,
       });
     });
-    //$('.sortable').sortable({
-    //    items: 'li' ,
-    //    forcePlaceholderSize: true,
+    $('ul.sortable').sortable({
+      dropOnEmpty: true,
+      forcePlaceholderSize: true,
+    });
+    $('.sortable').sortable({
+        items: 'li' ,
+        forcePlaceholderSize: true,
+        dropOnEmpty: true,
     //    placeholder : '<tr><td colspan="7">&nbsp;</td></tr>'
-    //});
+    });
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
       /*
 
