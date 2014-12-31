@@ -110,3 +110,7 @@ body {
   word-wrap: normal;
   width: 100%;
 }
+li.sortable-placeholder {
+  border: 1px dashed #FF0000;
+  background: none;
+}

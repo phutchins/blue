@@ -82,10 +82,6 @@
     .connected.no2 {
       float: right;
     }
-    li.sortable-placeholder {
-      border: 1px dashed #CCC;
-      background: none;
-    }
 
     #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
     #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 0em; font-size: 1.4em; height: 44px; }
@@ -157,6 +153,7 @@
           return $(this).data("id");
       }).get();
 
+      // Should be a patch instead of post
       $.ajax({
         type: "POST",
         //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
