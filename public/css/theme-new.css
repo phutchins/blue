@@ -1,0 +1,14 @@
+.card-name a:hover {
+  display: block;
+}
+body a:hover {
+  text-decoration: none !important;
+}
+.portlet-header a:hover {
+}
+.search-box {
+  width: 600px;
+}
+.nav-tabs {
+  margin-top: 8px;
+}

@@ -114,3 +114,82 @@ li.sortable-placeholder {
   border: 1px dashed #FF0000;
   background: none;
 }
+header, section {
+  display: block;
+}
+body {
+  font-family: 'Droid Serif';
+}
+h1, h2 {
+  text-align: center;
+  font-weight: normal;
+}
+ul {
+  list-style-type: none;
+  padding-left: 0em;
+}
+#features {
+  margin: auto;
+  width: 460px;
+  font-size: 0.9em;
+}
+.connected, .sortable, .exclude, .handles {
+  margin: auto;
+  padding: 0;
+  width: 100%;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.sortable.grid {
+  overflow: hidden;
+}
+.connected li, .sortable li, .exclude li, .handles li {
+  list-style: none;
+  list-style-type: none;
+  border: 1px solid #CCC;
+  background: #F6F6F6;
+  font-family: "Tahoma";
+  color: #1C94C4;
+  margin: 5px;
+  padding: 5px;
+  height: 100%;
+}
+.connected.ul {
+  list-style-type: none;
+}
+.handles span {
+  cursor: move;
+}
+li.disabled {
+  opacity: 0.5;
+}
+.sortable.grid li {
+  line-height: 80px;
+  float: left;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+}
+li.highlight {
+  background: #FEE25F;
+}
+#connected {
+  overflow: hidden;
+  margin: auto;
+  float: left;
+}
+.connected {
+  float: left;
+  width: 100%;
+}
+.connected.no2 {
+  float: right;
+}
+
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 0em; font-size: 1.4em; height: 44px; }
+#sortable li span { position: absolute; margin-left: -1.3em; martin-right: 1em; }
