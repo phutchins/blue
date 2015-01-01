@@ -19,9 +19,9 @@ body a:hover {
 .nav-buttons {
   display: inline-block;
   text-align:left;
-  background:green;
   margin:0 auto !important;
   display:inline-block;
+  padding: 10px;
 }
 .menu-login {
   max-width: 900px;
@@ -29,11 +29,40 @@ body a:hover {
   position: absolute;
   right: 5px;
   float: right;
-  top: 13px;
+  top: 0px;
+  padding: 10px;
 }
 .header {
   height: 55px;
   vertical-align: middle;
   text-align: center;
   display: table-cell;
+}
+.board-column {
+  display: inline-block;
+  width: 300px;
+  margin: 4px;
+  vertical-align: top;
+  background: #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+.card-container {
+  padding-left: 0;
+}
+.board-column-name {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+.card {
+  width: 100%;
+  margin: 0 1em 1em 0;
+  padding: 0.3em;
+  background: #fff;
+  border-radius: 3px;
+  list-style-type: none;
 }

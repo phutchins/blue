@@ -1,8 +1,10 @@
 <div id="tabs" class="board">
   <% if ( typeof(boards) != 'undefined' ) { %>
     <ul class="nav nav-tabs">
-      <% boards.forEach( function ( board ) { %>
-        <li role="presentation"><a href="#tabs-<%=board.id%>"><%= board.name %></a></li>
+      <% count = 0; %>
+      <% boards.forEach( function ( board, index, array ) { %>
+        <% count++ %>
+        <li role="presentation"<% if (index == 0) { %> class="active"<% }; %>><a href="#tabs-<%=board.id%>"><%= board.name %></a></li>
         <!-- <li role="presentation" class="active"><a href="#">Home</a></li> -->
       <% }); %>
       <li role="presentation"><a href="/projects/action/createBoard?projectName=<%=encodeURIComponent(project.name) %>"> + </a></li>
