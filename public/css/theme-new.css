@@ -8,7 +8,32 @@ body a:hover {
 }
 .search-box {
   width: 600px;
+  display: inline-block;
+  position: absolute;
+  float: left;
+  top: 13px;
 }
 .nav-tabs {
   margin-top: 8px;
+}
+.nav-buttons {
+  display: inline-block;
+  text-align:left;
+  background:green;
+  margin:0 auto !important;
+  display:inline-block;
+}
+.menu-login {
+  max-width: 900px;
+  display: inline-block;
+  position: absolute;
+  right: 5px;
+  float: right;
+  top: 13px;
+}
+.header {
+  height: 55px;
+  vertical-align: middle;
+  text-align: center;
+  display: table-cell;
 }

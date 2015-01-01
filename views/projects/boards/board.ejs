@@ -1,23 +1,23 @@
 <section id="connected" name="<%= board.name %>">
 <% board.columns.forEach( function ( column ) { %>
- <div class="portlet-column">
-   <div class="board-column-name"><%= column %></div>
-   <ul id="<%= column %>" class="connected sortable dropzone <%= column %>">
-     <% board.cards.forEach( function ( card ) { %>
-       <% if (card.columnName === column) { %>
-         <li draggable=true class="portlet asdf" id="<%= card.cardId %>">
-           <a style="card-name" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
-               <div class="portlet-header">
-                 <span class="lead card-name"><%= cards[card.cardId].name %></span>
-               </div>
-               <div class="portlet-content">
-               </div>
-             </a>
-           </li>
-       <% } %>
-     <% }); %>
-   </ul>
-   <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="add-card"> Add a card...</a>
- </div>
+  <div class="portlet-column">
+    <div class="board-column-name"><%= column %></div>
+    <ul id="<%= column %>" class="connected sortable dropzone <%= column %>">
+      <% board.cards.forEach( function ( card ) { %>
+        <% if (card.columnName === column) { %>
+          <li draggable=true class="portlet asdf" id="<%= card.cardId %>">
+            <a style="card-name" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
+              <div class="portlet-header">
+                <span class="lead card-name"><%= cards[card.cardId].name %></span>
+              </div>
+              <div class="portlet-content">
+              </div>
+            </a>
+          </li>
+        <% } %>
+      <% }); %>
+    </ul>
+    <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="add-card"> Add a card...</a>
+  </div>
 <% }); %>
-</div>
+</section>
