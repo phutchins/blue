@@ -270,6 +270,7 @@ module.exports = function(app, passport) {
             req.user.session.lastProject = req.params.projectName;
             console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
             res.render('projects/project.ejs', {
+              user : req.user,
               cards: cards,
               boards: boards,
               project: project

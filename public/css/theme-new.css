@@ -1,10 +1,13 @@
-.card-name a:hover {
+.card-link a:hover {
   display: block;
 }
 body a:hover {
   text-decoration: none !important;
 }
 .portlet-header a:hover {
+}
+.main-container {
+  min-height: 640;
 }
 .search-box {
   width: 600px;
@@ -13,30 +16,148 @@ body a:hover {
   float: left;
   top: 13px;
 }
+input[type="text"].header-search-input {
+  background-color: rgba(255,255,255,.3);
+  border-radius: 3px;
+  border: none;
+  color: rgba(255,255,255,.5);
+  float: left;
+  font-size: 13px;
+  height: 30px;
+  margin: 0;
+  min-height: 30px;
+  padding-right: 30px;
+  padding-left: 8px;
+  line-height: 19px;
+  -webkit-transition: width .15s;
+  transition: width .15s;
+  width: 180px;
+  z-index: 1;
+}
 .nav-tabs {
   margin-top: 8px;
+  font-family: "Arial Black", Gadget, sans-serif;
 }
-.nav-buttons {
+.header-left {
+  position: absolute;
+  top: 5px;
+  left: 0;
+}
+.projects-upper {
+  position: relative;
+  text-align: center;
+  top: 8px;
+}
+.header-projects-icon {
+  color: white;
+}
+.header-projects-text {
+  font-family: "Arial Black", Gadget, sans-serif;
+  color: white;
+}
+.header-projects {
+  font-family: "Arial Black", Gadget, sans-serif;
+  float: left;
+  margin-left: 6px;
+}
+.header-user-button {
+}
+.header-button {
+border-radius: 3px;
+background: rgba(255,255,255,.3);
+background: -webkit-linear-gradient(top,rgba(255,255,255,.3) 0,rgba(255,255,255,.2) 100%);
+background: linear-gradient(to bottom,rgba(255,255,255,.3) 0,rgba(255,255,255,.2) 100%);
+color: #f3f3f3;
+display: block;
+float: left;
+font-weight: 700;
+height: 30px;
+line-height: 30px;
+padding: 0 8px;
+position: relative;
+margin-right: 8px;
+min-width: 30px;
+text-decoration: none;
+}
+.header-search {
+  display: block;
+  text-align: left;
+  float: right;
+  margin: 0 8px 0 0;
+  position: relative;
+  z-index: 1;
+}
+.header-search-icon {
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+  position: absolute;
+  font-size: 16px;
+  right: -6px;
+  color: white;
+  top: 7px;
+  -webkit-transition: background 85ms,color 85ms;
+  transition: background 85ms,color 85ms;
+  z-index: 2;
+}
+.icon-lg {
+  height: 30px;
+  font-size: 20px;
+  line-height: 30px;
+  width: 30px;
+  color: #a6a6a6;
   display: inline-block;
-  text-align:left;
-  margin:0 auto !important;
-  display:inline-block;
-  padding: 10px;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
 }
-.menu-login {
-  max-width: 900px;
+.header-user {
   display: inline-block;
   position: absolute;
   right: 5px;
   float: right;
-  top: 0px;
-  padding: 10px;
+  top: 5px;
 }
-.header {
-  height: 55px;
+.header2 {
+  height: 30px;
+  padding: 5px;
   vertical-align: middle;
   text-align: center;
   display: table-cell;
+}
+.header {
+  background: #0e74af;
+  height: 40px;
+  overflow: hidden;
+  padding: 5px;
+  position: relative;
+  z-index: 10;
+  display: block;
+  font: 14px "Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+.header-logo {
+  width: 130px;
+  bottom: 0;
+  display: block;
+  height: 30px;
+  left: 50%;
+  margin-left: -40px;
+  position: absolute;
+  top: -5px;
+  text-align: center;
+  z-index: 2;
+  color: white;
+  font-size: 250%;
+  font-family: "Arial Black", Gadget, sans-serif;
+  opacity: .5;
+  -webkit-transition: opacity ease-in 85ms;
+  transition: opacity ease-in 85ms;
+}
+.header-logo-default {
+  background-image: "/images/blue_logo.png";
 }
 .board-column {
   display: inline-block;
@@ -49,6 +170,7 @@ body a:hover {
 }
 .card-container {
   padding-left: 0;
+  min-height: 1em;
 }
 .board-column-name {
   font-weight: bold;
@@ -65,4 +187,7 @@ body a:hover {
   background: #fff;
   border-radius: 3px;
   list-style-type: none;
+}
+.projects-container {
+  margin: 15px;
 }

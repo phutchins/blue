@@ -1,33 +1,35 @@
 <!-- views/projects/project.ejs -->
-<div class="container-fluid">
-  <!-- <div class="header"> -->
-  <nav class="navbar navbar-default">
-    <div class="nav-buttons">
-      <a href="/" class="btn btn-default btn-sm"> Home</a>
-      <a href="/projects/action/createProject" class="btn btn-default btn-sm"> Create</a>
-      <a href="/profile" class="btn btn-default btn-sm"> Profile</a>
-      <a href="/logout" class="btn btn-default btn-sm"> Logout</a>
+<div class="main-container container-fluid">
+  <div class="header">
+  <!-- <nav class="navbar navbar-default"> -->
+    <a class="header-logo" href="/" title="Back go your boards page">
+      <span class="header-logo-default fa fa-coffee"></span>Blue
+    </a>
+    <div class="header-left">
+      <div class="header-projects header-button">
+        <a href="/projects">
+          <span class="header-projects-icon fa fa-asterisk"></span>
+          <span class="header-projects-text">Projects</span>
+        </a>
+      </div>
+      <div class="header-search">
+        <input class="header-search-input js-search-input js-disable-on-dialog" type="text" autocomplete="off" autocorrect="off" spellcheck="false" value="">
+        <span class="header-search-icon fa fa-search"></span>
+        </span>
+      </div>
     </div>
-    <div class="menu-login">
-      <form class="form-inline">
-        <div class="form-group">
-          <label class="sr-only" for="exampleInputEmail2">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
-        </div>
-        <div class="form-group">
-          <label class="sr-only" for="exampleInputPassword2">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password">
-        </div>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox"> Remember me
-          </label>
-        </div>
-        <button type="submit" class="btn btn-default">Sign in</button>
-      </form>
+    <div class="header-user">
+      <a href="/profile">
+        <span class="header-user-button header-button">
+          <span class="fa fa-user"></span>
+          <span><%= user.local.name %></span>
+        </span>
+      </a>
+      <a href="/logout"><span class="header-button">Logout</a>
     </div>
-  </nav>
+  </div>
+  <!-- </nav> -->
   <link rel="stylesheet" href="/css/theme-new.css">
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">-->

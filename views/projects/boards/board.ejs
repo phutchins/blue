@@ -6,11 +6,11 @@
       <% board.cards.forEach( function ( card ) { %>
         <% if (card.columnName === column) { %>
           <li draggable=true class="card" id="<%= card.cardId %>">
-            <a style="card-name" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
-              <div class="portlet-header">
-                <span class="lead card-name"><%= cards[card.cardId].name %></span>
+            <a style="card-link" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
+              <div class="card-name">
+                <span class="lead"><%= cards[card.cardId].name %></span>
               </div>
-              <div class="portlet-content">
+              <div class="card-content">
               </div>
             </a>
           </li>
