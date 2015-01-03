@@ -210,29 +210,35 @@ module.exports = function(app, passport) {
   });
 
   // Move a card to a different column
-  app.post('/projects/action/moveCard', isLoggedIn, function(req, res) {
-    console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumn: " + req.body.newColumn + " boardName: " + req.body.boardName);
+  app.post('/card/move', isLoggedIn, function(req, res) {
+    var newColumnId = req.param('newColumnId');
+    console.log("Move Card (POST): newColumnId is '", newColumnId, "'");
+    var cardId = req.body.cardId;
+    console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumnId: " + req.body.newColumnId + " boardName: " + req.body.boardName);
     // do exec here
     Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, card) {
       var oldColumn = card.membership._column;
-      var newColumn = req.body.newColumn;
-      var cardId = req.body.cardId;
+      var myCard = card;
+      console.log("Move Card (POST): Found card '",card,"'");
       Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: cardId }}, function(err, column) {
-        //Card.findOne, {$set: { 'membership._column': req.body.newColumn } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
-        card.membership._column = newColumn;
+        console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", column.name, "'");
+        //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
+        card.membership._column = newColumnId;
         card.save(function (err) {
+          console.log("Move Card (POST): Saving card after updating column to '", newColumnId, "'");
+          console.log("Move Card (POST): Card after save... ", myCard);
           if (err) {
             console.log(err);
           };
         });
       });
-      Column.findOneAndUpdate( { _id: newColumn }, { $push: { _cards: cardId } }, function(err, column) {
+      Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: cardId } }, function(err, column) {
+        console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
         if (err) { console.log(err); }
       });
-      console.log("card", card);
     //Card.findOneAndUpdate( { _id: req.body.cardId }, {$set: { 'cards.$.columnId': req.body.newColumn } }, {new: true, upsert: false}, function(err, board) {
       if (err) { console.log(err) }
-      console.log("Move Card (POST): Moved card with id '" + req.body.cardId + "' to column '" + req.body.newColumn + "'");
+      console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
     });
   });
 

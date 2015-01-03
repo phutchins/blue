@@ -49,7 +49,7 @@
       */
       //$.GET('/projects/action/moveCard', {cardId: card.cardId, boardName: board.name, columnName: ui.endparent}, function(data){
       console.log("UI: ", ui);
-      console.log("parent node id:" + ui.item[0].parentNode.id);
+      console.log("parent node id (target column):" + ui.item[0].parentNode.id); // Where the card is moving to
       console.log("item id:" + ui.item[0].id);
       console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
       //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
@@ -67,9 +67,9 @@
       $.ajax({
         type: "POST",
         //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
-        url: "/projects/action/moveCard",
+        url: "/card/move",
         dataType: "json",
-        data: {cardId: ui.item[0].id, newColumn: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
+        data: {cardId: ui.item[0].id, newColumnId: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
         success: function(order){
           console.log("Order: ", order)
         }
