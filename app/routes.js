@@ -219,7 +219,7 @@ module.exports = function(app, passport) {
     Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, card) {
       var oldColumn = card.membership._column;
       var myCard = card;
-      console.log("Move Card (POST): Found card '",card,"'");
+      console.log("Move Card (POST): Found card name '", card.name, "' card data '",card,"'");
       Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: cardId }}, function(err, column) {
         console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", column.name, "'");
         //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
