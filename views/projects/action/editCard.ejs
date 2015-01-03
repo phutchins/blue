@@ -17,19 +17,19 @@
     <h1><span class="fa fa-sign-in"></span> Edit</h1>
 
     <form action="/projects/action/editCard" method="post">
-      <input type="hidden" name="cardId" value="<%= cardId %>">
+      <input type="hidden" name="columnId" value="<%= columnId %>">
       <input type="hidden" name="projectName" value="<%= projectName %>">
-      <input type="hidden" name="boardName" value="<%= boardName %>">
+      <input type="hidden" name="cardId" value="<%= card.id %>">
       <div class="form-group">
           <label>Name</label>
-          <input type="text" class="form-control" name="cardName" value="<%= cardName %>">
+          <input type="text" class="form-control" name="cardName" value="<%= card.name %>">
       </div>
       <div class="form-group">
         <label>Description</label>
-        <textarea class="form-control" rows="3" name="cardDescription"><%= cardDescription %></textarea>
+        <textarea class="form-control" rows="3" name="cardDescription"><%= card.description %></textarea>
       </div>
       <button type="submit" class="btn btn-warning btn-lg">Save</button>
-      <a href="/cards/deleteCard?cardId=<%= cardId %>&boardName=<%= boardName %>&projectName=<%= projectName %>" class="btn btn-warning btn-lg">Delete</a>
+      <a href="/cards/deleteCard?cardId=<%= card._id %>&projectName=<%= projectName %>&columnId=<%= columnId %>" class="btn btn-warning btn-lg">Delete</a>
     </form>
 
     <hr>

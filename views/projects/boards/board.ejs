@@ -1,23 +1,21 @@
 <section id="connected" name="<%= board.name %>">
-<% board.columns.forEach( function ( column ) { %>
+<% board._columns.forEach( function ( column ) { %>
   <div class="board-column">
-    <div class="board-column-name"><%= column %></div>
-    <ul id="<%= column %>" class="card-container connected sortable dropzone <%= column %>">
-      <% board.cards.forEach( function ( card ) { %>
-        <% if (card.columnName === column) { %>
-          <li draggable=true class="card" id="<%= card.cardId %>">
-            <a style="card-link" href="/projects/action/editCard?cardId=<%= card.cardId %>&boardName=<%= board.name %>&projectName=<%= project.name %>">
-              <div class="card-name">
-                <span class="lead"><%= cards[card.cardId].name %></span>
-              </div>
-              <div class="card-content">
-              </div>
-            </a>
-          </li>
-        <% } %>
+    <div class="board-column-name"><%= column.name %></div>
+    <ul id="<%= board._id %>" class="card-container connected sortable dropzone <%= column.name %><%= board._id %>">
+      <% column._cards.forEach( function ( card ) { %>
+        <li draggable=true class="card" id="<%= card._id %>">
+        <a style="card-link" href="/projects/action/editCard?cardId=<%= card._id %>&columnId=<%= column.id %>&projectName=<%= project.name %>">
+            <div class="card-name">
+              <span class="lead"><%= card.name %></span>
+            </div>
+            <div class="card-content">
+            </div>
+          </a>
+        </li>
       <% }); %>
     </ul>
-    <a href="/projects/action/createCard?projectName=<%= project.name %>&boardName=<%= board.name %>&columnName=<%= column %>" class="add-card"> Add a card...</a>
+    <a href="/projects/action/createCard?columnId=<%= column._id %>&projectName=<%= project.name %>" class="add-card"> Add a card...</a>
   </div>
 <% }); %>
 </section>

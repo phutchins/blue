@@ -1,0 +1,28 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/phutchins/.nvm/v0.10.25/bin/node',
+1 verbose cli   '/Users/phutchins/.nvm/v0.10.25/bin/npm',
+1 verbose cli   'start' ]
+2 info using npm@1.3.24
+3 info using node@v0.10.25
+4 verbose run-script [ 'prestart', 'start', 'poststart' ]
+5 info prestart node-authentication@
+6 info start node-authentication@
+7 verbose unsafe-perm in lifecycle true
+8 info node-authentication@ Failed to exec start script
+9 error node-authentication@ start: `node server.js`
+9 error Exit status 8
+10 error Failed at the node-authentication@ start script.
+10 error This is most likely a problem with the node-authentication package,
+10 error not with npm itself.
+10 error Tell the author that this fails on your system:
+10 error     node server.js
+10 error You can get their info via:
+10 error     npm owner ls node-authentication
+10 error There is likely additional logging output above.
+11 error System Darwin 14.0.0
+12 error command "/Users/phutchins/.nvm/v0.10.25/bin/node" "/Users/phutchins/.nvm/v0.10.25/bin/npm" "start"
+13 error cwd /Users/phutchins/github/blue
+14 error node -v v0.10.25
+15 error npm -v 1.3.24
+16 error code ELIFECYCLE
+17 verbose exit [ 1, true ]

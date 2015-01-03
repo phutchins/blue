@@ -4,7 +4,9 @@ var cardSchema = new Schema({
   name: { type: String },
   description: { type: String, default: "" },
   membership: {
-    column: { type: String },
+    //_column: { type: String },
+    _column: { type: mongoose.SchemaTypes.ObjectId,ref: "Column" },
+    position: { type: Number },
     owner: { type: String },
     members: [ { type: String } ]
   },

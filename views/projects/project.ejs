@@ -1,5 +1,4 @@
 <!-- views/projects/project.ejs -->
-<!doctype html>
 <html>
 <head>
   <title>Blue Projects</title>
@@ -21,7 +20,7 @@
   <script>
 
     $(function() {
-      $('#todo, #doing, #done').sortable({
+      $('.board-column > ul').sortable({
         connectWith: '.connected',
         dropOnEmpty: true,
       });
@@ -49,12 +48,15 @@
 
       */
       //$.GET('/projects/action/moveCard', {cardId: card.cardId, boardName: board.name, columnName: ui.endparent}, function(data){
-      console.log(ui);
-      console.log(ui.item);
+      console.log("UI: ", ui);
       console.log("parent node id:" + ui.item[0].parentNode.id);
       console.log("item id:" + ui.item[0].id);
       console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
-      console.log("board: " + ui.item[0].parentNode.parentNode.parentNode.previousElementSibling.outerText);
+      //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
+      console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
+      console.log("ui.startparent: ", ui.startparent, " ui.endparent: ", ui.endparent);
+      console.log("ui.item.index(): ", ui.item.index(), " ui.oldindex: ", ui.oldindex);
+      //console.log("board: " + ui.item[0].parentNode.parentNode.parentNode.previousElementSibling.outerText);
 
       var order = $('ul.sortable li').map(function(){
           console.log($(this).data("id"));
@@ -67,9 +69,9 @@
         //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
         url: "/projects/action/moveCard",
         dataType: "json",
-        data: {cardId: ui.item[0].id, newColumn: ui.item[0].parentNode.id, boardName: ui.item[0].parentNode.parentNode.parentNode.previousElementSibling.outerText},
+        data: {cardId: ui.item[0].id, newColumn: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
         success: function(order){
-          console.log(order)
+          console.log("Order: ", order)
         }
       });
 

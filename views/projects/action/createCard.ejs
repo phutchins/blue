@@ -17,12 +17,15 @@
     <h1><span class="fa fa-sign-in"></span> Create</h1>
 
     <form action="/projects/action/createCard" method="post">
+      <input type="hidden" name="columnId" value="<%= columnId %>">
       <input type="hidden" name="projectName" value="<%= projectName %>">
-      <input type="hidden" name="boardName" value="<%= boardName %>">
-      <input type="hidden" name="columnName" value="<%= columnName %>">
       <div class="form-group">
           <label>Name</label>
           <input type="text" class="form-control" name="name">
+      </div>
+      <div class="form-group">
+          <label>Description</label>
+          <input type="text" class="form-control" name="description">
       </div>
       <button type="submit" class="btn btn-warning btn-lg">Save</button>
     </form>
