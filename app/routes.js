@@ -277,6 +277,7 @@ module.exports = function(app, passport) {
         console.log("Boards: " + boards);
       } else {
         res.render('projects/project.ejs', {
+          user : req.user,
           project: project
         });
       };
