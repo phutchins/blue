@@ -216,12 +216,12 @@ module.exports = function(app, passport) {
     var cardId = req.body.cardId;
     console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumnId: " + req.body.newColumnId + " boardName: " + req.body.boardName);
     // do exec here
-    Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, card) {
-      var oldColumn = card.membership._column;
-      var myCard = card;
-      console.log("Move Card (POST): Found card name '", card.name, "' card data '",card,"'");
+    Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, foundCard) {
+      var myCard = foundCard;
+      var oldColumn = myCard.membership._column;
+      console.log("Move Card (POST): Found card name '", myCard.name, "' card data '",myCard,"'");
       Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: cardId }}, function(err, column) {
-        console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", column.name, "'");
+        console.log("Move Card (POST): Found and removed card '", myCard.name, "' from column '", column.name, "'");
         //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
         card.membership._column = newColumnId;
         card.save(function (err) {
@@ -233,7 +233,7 @@ module.exports = function(app, passport) {
         });
       });
       Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: cardId } }, function(err, column) {
-        console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
+        console.log("Move Card (POST): Found and added card '",myCard.name,"' to column '",column.name,"'");
         if (err) { console.log(err); }
       });
     //Card.findOneAndUpdate( { _id: req.body.cardId }, {$set: { 'cards.$.columnId': req.body.newColumn } }, {new: true, upsert: false}, function(err, board) {
