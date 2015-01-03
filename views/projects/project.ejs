@@ -19,11 +19,15 @@
   <script src="/js/jquery.sortable.js"></script>
   <script>
 
+    console.log("board-column > ul: ", $('.board-column > ul'));
     $(function() {
-      $('.board-column > ul').sortable({
-        connectWith: '.connected',
-        dropOnEmpty: true,
-      });
+      if (typeof($('.board-column > ul')) !== 'undefined') {
+        console.log("board-column > ul: ", $('.board-column > ul'));
+        $('.board-column > ul').sortable({
+          connectWith: '.connected',
+          dropOnEmpty: true,
+        });
+      };
     });
     $('ul.sortable').sortable({
       dropOnEmpty: true,
@@ -71,7 +75,7 @@
         dataType: "json",
         data: {cardId: ui.item[0].id, newColumnId: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
         success: function(order){
-          console.log("Order: ", order)
+          console.log("Order: ", order);
         }
       });
 

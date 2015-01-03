@@ -16,6 +16,10 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 
 var configDB = require('./config/database.js');
+var configRedis = require('./config/redis.js');
+
+var RedisStore = require('connect-redis')(session);
+
 
 // configuration ===============================================================
 var db = mongoose.connection;
@@ -29,6 +33,16 @@ mongoose.connect(configDB.url); // connect to our database
 
 require('./config/passport')(passport); // pass passport for configuration
 
+//app.use(express.session({
+//    secret:'secret',
+//    maxAge: new Date(Date.now() + 3600000),
+//    store: new MongoStore(
+//        {db:mongoose.connection.db},
+//        function(err){
+//            console.log(err || 'connect-mongodb setup ok');
+//        })
+//}));
+
 // set up our express application
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
@@ -38,9 +52,32 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(express['static'](path.join(__dirname, 'public')));
 
 // required for passport
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({
+  secret: "y0urR4nd0mT0k3n",
+  store : new RedisStore({
+    host : configRedis.host,
+    port : configRedis.port,
+    user : configRedis.username,
+    pass : configRedis.password
+  }),
+  cookie : {
+    maxAge : 604800 // one week
+  }
+}));
+//app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
+app.use(passport.session({
+  secret: "y0urR4nd0mT0k3n",
+  store : new RedisStore({
+    host : configRedis.host,
+    port : configRedis.port,
+    user : configRedis.username,
+    pass : configRedis.password
+  }),
+  cookie : {
+    maxAge : 604800 // one week
+  }
+}));
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
