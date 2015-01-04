@@ -2,7 +2,7 @@
 <% board._columns.forEach( function ( column ) { %>
   <div class="board-column">
     <div class="board-column-name"><%= column.name %></div>
-    <ul id="<%= board._id %>" class="card-container connected sortable dropzone <%= column.name %><%= board._id %>">
+    <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
       <% column._cards.forEach( function ( card ) { %>
         <li draggable=true class="card" id="<%= card._id %>">
         <a style="card-link" href="/projects/action/editCard?cardId=<%= card._id %>&columnId=<%= column.id %>&projectName=<%= project.name %>">
@@ -18,11 +18,11 @@
     <a href="/projects/action/createCard?columnId=<%= column._id %>&projectName=<%= project.name %>" class="add-card"> Add a card...</a>
   </div>
 <% }); %>
+  <div>
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">+</button>
+  </div>
 </section>
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  +
-</button>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -38,7 +38,7 @@
           <input type="hidden" name="projectName" value="<%= project.name %>">
           <div class="form-group">
             <label>Name</label>
-            <input type="text" class="form-control" name="name">
+            <input type="text" class="form-control" name="columnName">
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
