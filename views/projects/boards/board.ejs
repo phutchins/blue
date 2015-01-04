@@ -1,7 +1,7 @@
 <section id="connected" name="<%= board.name %>">
 <% board._columns.forEach( function ( column ) { %>
   <div class="board-column">
-    <div class="board-column-name"><%= column.name %></div>
+    <div class="board-column-name edit"><%= column.name %></div>
     <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
       <% column._cards.forEach( function ( card ) { %>
         <li draggable=true class="card" id="<%= card._id %>">

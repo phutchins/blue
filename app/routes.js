@@ -260,13 +260,17 @@ module.exports = function(app, passport) {
     Project.findOne({ name: projectName }, function(err, project) {
       if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
         var boards = [];
-        async.each(project.membership.boards, function(boardId, boardsCallback) {
+        var reverseBoards = Array;
+        reverseBoards = project.membership.boards.reverse();
+        console.log("Project (GET): reverseBoards - ",reverseBoards);
+        console.log("Project (GET): boards - ",project.membership.boards);
+        async.each(reverseBoards, function(boardId, boardsCallback) {
           Board.findOne({ _id: boardId }).populate('_columns').exec( function(err, board) {
             console.log('looping board ' + board.name);
             Card.populate(board, { path: '_columns._cards' }, function(err, populatedBoard) {
               boards.push(board);
               boardsCallback();
-            });
+            }, { sort: [['_id', 'ascending' ]] } );
           });
         }, function(err) {
           if (err) { return console.log(err); }
