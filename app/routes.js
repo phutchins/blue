@@ -122,6 +122,20 @@ module.exports = function(app, passport) {
     });
   });
 
+  app.post('/column/create', isLoggedIn, function(req, res) {
+    var boardId = req.param("boardId");
+    var projectName = req.param("projectName");
+    new Column({
+      name : req.param("columnName")
+    }).save( function(err, column, count) {
+      console.log("Column '", column.name, "' created with id '", column._id, "'");
+      Board.findOneAndUpdate({ _id : boardId }, { $push : { _columns : column._id }}, function(err, board) {
+        if (err) console.log(err);
+      });
+    });
+    res.redirect( '/projects/' + projectName );
+  });
+
   app.get('/projects/action/createCard', isLoggedIn, function(req, res) {
     console.log("createCard (GET): columnId - ", req.query.columnId);
     res.render('projects/action/createCard.ejs', {
