@@ -1,7 +1,7 @@
 <section id="connected" name="<%= board.name %>">
 <% board._columns.forEach( function ( column ) { %>
   <div class="board-column">
-    <div class="edit board-column-name"><%= column.name %></div>
+    <div class="editable-blue edit board-column-name"><%= column.name %></div>
     <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
       <% column._cards.forEach( function ( card ) { %>
         <li draggable=true class="card" id="<%= card._id %>">
@@ -20,120 +20,6 @@
   </div>
 <% }); %>
   <div>
-    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addColumnModal">+</button>
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addColumnModal" data-boardid="<%= board._id %>" data-projectname="<%= project.name %>">+</button>
   </div>
 </section>
-<!-- Button trigger modal -->
-
-<!-- Modal -->
-<div class="modal fade" id="addColumnModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Add Column</h4>
-      </div>
-      <div class="modal-body">
-        <form action="/column/create" method="post">
-          <input type="hidden" name="boardId" value="<%= board._id %>">
-          <input type="hidden" name="projectName" value="<%= project.name %>">
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" class="form-control" name="columnName">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Add</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="editCardModal" tabindex="-1" role="dialog" aria-labelledby="editCardLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="editCardLabel">Edit Card</h4>
-      </div>
-      <div class="modal-body">
-        <form action="/projects/action/editCard" method="post">
-          <input type="hidden" name="columnId">
-          <input type="hidden" name="projectName">
-          <input type="hidden" name="cardId">
-          <div class="form-group">
-              <label>Name</label>
-              <input type="text" class="form-control" name="cardName">
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea class="form-control" rows="3" name="cardDescription"></textarea>
-          </div>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-warning btn-lg">Save</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-$('#addColumnModal').on('shown.bs.modal', function () {
-  $('#columnName').focus()
-})
-$('#editCardModal').on('show.bs.modal', function(e) {
-  var columnId = $(e.relatedTarget).data('columnid');
-  var projectName = $(e.relatedTarget).data('projectname');
-  var cardId = $(e.relatedTarget).data('cardid');
-  var cardName = $(e.relatedTarget).data('cardName');
-  var cardDescription = $(e.relatedTarget).data('cardDescription');
-  console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
-  $(e.currentTarget).find('input[name="columnId"]').val(columnId);
-  $(e.currentTarget).find('input[name="projectName"]').val(projectName);
-  $(e.currentTarget).find('input[name="cardId"]').val(cardId);
-  $(e.currentTarget).find('input[name="cardName"]').val(cardName);
-  $(e.currentTarget).find('input[name="cardDescription"]').val(cardDescription);
-  $('#cardName').focus();
-});
-/**
-var content = $($("#FormDialog").html());
-OpenDialogForSelectionAdmItem('Enter Info', content, function() {
-    alert('saved');
-});
-
-$("body").on("click", "#deletePhone", function() {
-    var msg = "Are you sure you want to delete this phone number?";
-    OpenDialogForSelectionAdmItem('Delete?', msg, function() {
-        alert('deleted');
-    },1);
-});
-
-function OpenDialogForSelectionAdmItem(title, content, callback, tier) {
-    tier = tier || 0;
-    var dlg = new BootstrapDialog({
-        title: title,
-        message: content,
-        buttons: [{
-            label: 'Save',
-            cssClass: 'btn-primary',
-            id: 'btnSave',
-            action: function (dialog) {
-                if (callback !== "") { callback(); }
-                dialog.close();
-            }
-        },{
-            label: 'Close',
-            cssClass: 'btn',
-            id: 'btnClose',
-            action: function (dialog) {
-                dialog.close();
-            }
-        }]
-    });
-
-    dlg.open();
-}
-**/
-</script>

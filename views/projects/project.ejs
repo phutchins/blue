@@ -3,9 +3,9 @@
 <head>
   <title>Blue Projects</title>
   <meta charset = "UTF-8" />
-  <script type = "text/javascript" src = "/js/jquery-2.1.3.min.js"></script>
-  <script type = "text/javascript" src = "/js/jquery-ui.js"></script>
-  <script type = "text/javascript" src = "/js/bootstrap.min.js"></script>
+  <script type = "text/javascript" src="/js/jquery-2.1.3.min.js"></script>
+  <script type = "text/javascript" src="/js/jquery-ui.js"></script>
+  <script type = "text/javascript" src="/js/bootstrap.min.js"></script>
   <script type = "text/javascript" src="/js/bootstrap-editable.min.js"></script>
   <script type = "text/javascript">
     $(init);
@@ -86,20 +86,11 @@
     $('.edit').editable();
 
     // make username1 editable
-/**      $('#board-column-name').editable({
+    $('#board-column-name').editable({
       type: 'text',
       pk: 1,
       url: '/post',
       title: 'Column Title'
-    }); **/
-
-    //ajax emulation
-    $.mockjax({
-      url: '/post',
-      responseTime: 200,
-      response: function(settings) {
-        console.log('done!');
-      }
     });
 
     // this is to automatically make the next item in the table editable
@@ -152,5 +143,85 @@
         }
       });
     });
+
+    var defaultBoardId = String;
+    <% boards.forEach( function ( board ) { %>
+      <% if (board._id === board._id) { defaultBoardId = board._id; }; %>
+      $('#tabs-<%= board.id %>').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+      });
+    <% }); %>
+
+    // Use to select default tab
+    // $('#myTab a[href="#profile"]').tab('show')
+    //$('#tabs-' + defaultBoardId + ' a:first').tab('show')
+
+    // Modal control scripts
+    // $('button[data-target="#addColumnModal"]').on('shown.bs.tab', function (e) {
+    $('#addColumnModal').on('shown.bs.modal', function (e) {
+      var button = e.relatedTarget;
+      var boardId = button.data('boardid');
+      var projectName = button.data('projectname');
+      $(this).find('board-id-input').val(boardId);
+      $(this).find('project-name-input').val(projectName);
+    })
+    //$('button[data-target="#addColumnModal"]').on('shown.bs.tab', function (e) {
+    //    e.target // newly activated tab
+    //      e.relatedTarget // previous active tab
+    //})
+    $('#editCardModal').on('show.bs.modal', function(e) {
+      console.log("RelatedTarget: ",e.relatedTarget);
+      var columnId = $(e.relatedTarget).data('columnid');
+      var projectName = $(e.relatedTarget).data('projectname');
+      var cardId = $(e.relatedTarget).data('cardid');
+      var cardName = $(e.relatedTarget).data('cardname');
+      var cardDescription = $(e.relatedTarget).data('carddescription');
+      console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);   $(e.currentTarget).find('input[name="columnId"]').val(columnId);
+      $(e.currentTarget).find('input[name="projectName"]').val(projectName);
+      $(e.currentTarget).find('input[name="cardId"]').val(cardId);
+      $(e.currentTarget).find('input[name="cardName"]').val(cardName);
+      $(e.currentTarget).find('input[name="cardDescription"]').val(cardDescription);
+      $('#cardName').focus();
+    });
+    /**
+    var content = $($("#FormDialog").html());
+    OpenDialogForSelectionAdmItem('Enter Info', content, function() {
+        alert('saved');
+    });
+
+    $("body").on("click", "#deletePhone", function() {
+        var msg = "Are you sure you want to delete this phone number?";
+        OpenDialogForSelectionAdmItem('Delete?', msg, function() {
+            alert('deleted');
+        },1);
+    });
+
+    function OpenDialogForSelectionAdmItem(title, content, callback, tier) {
+        tier = tier || 0;
+        var dlg = new BootstrapDialog({
+            title: title,
+            message: content,
+            buttons: [{
+                label: 'Save',
+                cssClass: 'btn-primary',
+                id: 'btnSave',
+                action: function (dialog) {
+                    if (callback !== "") { callback(); }
+                    dialog.close();
+                }
+            },{
+                label: 'Close',
+                cssClass: 'btn',
+                id: 'btnClose',
+                action: function (dialog) {
+                    dialog.close();
+                }
+            }]
+        });
+
+        dlg.open();
+    }
+    */
   </script>
 <% include ../footer %>

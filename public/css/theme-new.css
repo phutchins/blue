@@ -191,3 +191,6 @@ text-decoration: none;
 .projects-container {
   margin: 15px;
 }
+.editable-blue {
+  border-bottom: none;
+}

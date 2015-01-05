@@ -123,14 +123,23 @@ module.exports = function(app, passport) {
   });
 
   app.post('/column/create', isLoggedIn, function(req, res) {
-    var boardId = req.param("boardId");
-    var projectName = req.param("projectName");
+    var boardId = req.param.boardId;
+    var projectName = req.param.projectName;
+    console.log("/column/create - DEBUG - boardId: ",boardId);
+    console.log("/column/create - DEBUG - projectName: ",projectName);
     new Column({
       name : req.param("columnName")
     }).save( function(err, column, count) {
       console.log("Column '", column.name, "' created with id '", column._id, "'");
-      Board.findOneAndUpdate({ _id : boardId }, { $push : { _columns : column._id }}, function(err, board) {
-        if (err) console.log(err);
+      console.log("/column/create - DEBUG - boardId: ",boardId);
+      Board.findOneAndUpdate({ _id : mongoose.Types.ObjectId(boardId) }, { $push : { "_columns" : column._id }}, function(err, board) {
+        console.log("/column/create - INFO - column inside of Board.findOneAndUpdate: ",column);
+        if (err) {
+          console.log("/column/create - ERROR - adding column to board");
+          console.log(err);
+        } else {
+          console.log("Column '", column.name, "' added to board '",board.name,"'");
+        }
       });
     });
     res.redirect( '/projects/' + projectName );
