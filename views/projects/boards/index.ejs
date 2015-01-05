@@ -31,8 +31,8 @@
       </div>
       <div class="modal-body">
         <form action="/column/create" method="post">
-          <input class="board-id-input" name="boardId">
-          <input class="project-name-input" name="projectName">
+          <input type="hidden" class="board-id-input" name="boardId">
+          <input type="hidden" class="project-name-input" name="projectName">
           <div class="form-group">
             <label>Name</label>
             <input type="text" class="column-name-input form-control" name="columnName">
@@ -47,7 +47,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="editCardModal" tabindex="-1" role="dialog" aria-labelledby="editCardLabel" aria-hidden="true">
+<div class="modal fade" id="editCardModal" tabindex="-1" role="dialog" aria-labelledby="editCardModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -56,16 +56,16 @@
       </div>
       <div class="modal-body">
         <form action="/projects/action/editCard" method="post">
-          <input type="hidden" name="columnId">
-          <input type="hidden" name="projectName">
-          <input type="hidden" name="cardId">
+          <input type="hidden" name="columnId" class="column-id-input">
+          <input type="hidden" name="projectName" class="project-name-input">
+          <input type="hidden" name="cardId" class="card-id-input">
           <div class="form-group">
               <label>Name</label>
-              <input type="text" class="form-control" name="cardName">
+              <input type="text" class="form-control card-name-input" name="cardName">
           </div>
           <div class="form-group">
             <label>Description</label>
-            <textarea class="form-control" rows="3" name="cardDescription"></textarea>
+            <textarea class="form-control card-description-input" rows="3" name="cardDescription"></textarea>
           </div>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-warning btn-lg">Save</button>

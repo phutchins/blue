@@ -160,30 +160,98 @@
     // Modal control scripts
     // $('button[data-target="#addColumnModal"]').on('shown.bs.tab', function (e) {
     $('#addColumnModal').on('shown.bs.modal', function (e) {
-      var button = e.relatedTarget;
+      //var button = $('#addColumnButton');
+      var button = $(e.relatedTarget);
+      console.log("e: ", e);
+      //var boardId = button.data('boardid');
+      console.log("button.data: ", button.data('boardid'));
       var boardId = button.data('boardid');
+      console.log("boardId: " + boardId);
       var projectName = button.data('projectname');
-      $(this).find('board-id-input').val(boardId);
-      $(this).find('project-name-input').val(projectName);
+      console.log("boardId: ",boardId, "projectName: ",projectName);
+      $('.board-id-input').val(boardId);
+      $('.project-name-input').val(projectName);
     })
     //$('button[data-target="#addColumnModal"]').on('shown.bs.tab', function (e) {
     //    e.target // newly activated tab
     //      e.relatedTarget // previous active tab
     //})
     $('#editCardModal').on('show.bs.modal', function(e) {
-      console.log("RelatedTarget: ",e.relatedTarget);
-      var columnId = $(e.relatedTarget).data('columnid');
-      var projectName = $(e.relatedTarget).data('projectname');
-      var cardId = $(e.relatedTarget).data('cardid');
-      var cardName = $(e.relatedTarget).data('cardname');
-      var cardDescription = $(e.relatedTarget).data('carddescription');
-      console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);   $(e.currentTarget).find('input[name="columnId"]').val(columnId);
-      $(e.currentTarget).find('input[name="projectName"]').val(projectName);
-      $(e.currentTarget).find('input[name="cardId"]').val(cardId);
-      $(e.currentTarget).find('input[name="cardName"]').val(cardName);
-      $(e.currentTarget).find('input[name="cardDescription"]').val(cardDescription);
-      $('#cardName').focus();
+      //var cardLink = $('#editCard');
+      var cardLink = $(e.relatedTarget);
+      var cardId = cardLink.data('cardid');
+      var columnId = cardLink.data('columnid');
+      var editCardModul2 = e.target;
+      var editCardModul = this;
+      var projectName = cardLink.data('projectname');
+      var card = {};
+      console.log("editCardModal - JS Hook fired");
+
+      $.ajax({
+        type: "GET",
+        //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
+        url: "/cards/" + cardId,
+        success: function(returnCard){
+          console.log("Card: ", returnCard.data);
+          card = JSON.parse(returnCard.data);
+          console.log("editCardModal Found Card: ", card);
+          console.log("cardName:", card['name']);
+          console.log("typeof:", typeof(card));
+          var cardName = card['name'];
+          var cardDescription = card['description'];
+
+          console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
+          $('.column-id-input').val(columnId);
+          $('.project-name-input').val(projectName);
+          $('.card-id-input').val(cardId);
+          $('.card-name-input').val(cardName);
+          $('.card-description-input').val(cardDescription);
+          $('#cardName').focus();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("ERROR: " + errorThrown);
+          console.log("ERROR: " + errorThrown);
+        }
+      });
+
     });
+
+    $('#addCardModal').on('show.bs.modal', function(e) {
+      //var cardLink = $('#editCard');
+      var columnLink = $(e.relatedTarget);
+      var columnId = columnLink.data('columnid');
+      var editCardModul2 = e.target;
+      var editCardModul = this;
+      var projectName = cardLink.data('projectname');
+      var card = {};
+      console.log("editCardModal - JS Hook fired");
+
+      $.ajax({
+        type: "GET",
+        //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
+        url: "/cards/" + cardId,
+        success: function(returnCard){
+          console.log("Card: ", returnCard.data);
+          card = JSON.parse(returnCard.data);
+          console.log("editCardModal Found Card: ", card);
+          console.log("cardName:", card['name']);
+          console.log("typeof:", typeof(card));
+          var cardName = card['name'];
+          var cardDescription = card['description'];
+
+          console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
+          $('.column-id-input').val(columnId);
+          $('.project-name-input').val(projectName);
+          $('.card-id-input').val(cardId);
+          $('.card-name-input').val(cardName);
+          $('.card-description-input').val(cardDescription);
+          $('#cardName').focus();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          alert("ERROR: " + errorThrown);
+          console.log("ERROR: " + errorThrown);
+        }
+      });
     /**
     var content = $($("#FormDialog").html());
     OpenDialogForSelectionAdmItem('Enter Info', content, function() {

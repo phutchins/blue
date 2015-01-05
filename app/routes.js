@@ -123,8 +123,8 @@ module.exports = function(app, passport) {
   });
 
   app.post('/column/create', isLoggedIn, function(req, res) {
-    var boardId = req.param.boardId;
-    var projectName = req.param.projectName;
+    var boardId = req.param('boardId');
+    var projectName = req.param('projectName');
     console.log("/column/create - DEBUG - boardId: ",boardId);
     console.log("/column/create - DEBUG - projectName: ",projectName);
     new Column({
@@ -206,6 +206,7 @@ module.exports = function(app, passport) {
     res.redirect( '/projects/' + req.body.projectName );
   });
 
+  // change this to /cards/:cardId with app.delete
   app.get('/cards/deleteCard', isLoggedIn, function(req, res) {
     console.log("Delete Card (GET): Deleting card with ID '" + req.query.cardId + "'");
     // Add a message here to populate message field on board or project page with status of result
@@ -217,6 +218,17 @@ module.exports = function(app, passport) {
         console.log("Delete Card (GET): Removed card '" + req.query.cardId + "'");
         res.redirect('/projects/' + req.query.projectName || '/');
       });
+    });
+  });
+
+  app.get('/cards/:cardId', isLoggedIn, function(req, res) {
+    Card.findOne( { "_id": req.param("cardId") }, function(err, card) {
+      if (err) res.writeHead(500, err.message)
+      else if (card == null) res.writeHead(404);
+      else {
+        console.log("/cards/" + req.param("cardId") + " - Found card '" + card.name + "'");
+        res.json({ data: JSON.stringify(card) });
+      }
     });
   });
 
@@ -308,7 +320,6 @@ module.exports = function(app, passport) {
       };
     });
   });
-};
   // route middleware to make sure a user is logged in
   function isLoggedIn(req, res, next) {
 
@@ -331,3 +342,4 @@ module.exports = function(app, passport) {
       res.redirect( '/' );
     });
   };
+};
