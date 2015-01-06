@@ -116,11 +116,15 @@
 
     var defaultBoardId = String;
     <% boards.forEach( function ( board ) { %>
-      <% if (board._id === board._id) { defaultBoardId = board._id; }; %>
-      $('#tabs-<%= board.id %>').click(function (e) {
-        e.preventDefault()
-        $(this).tab('show')
-      });
+      console.log("Looping board._id: <%= board._id %>");
+      if ("<%= board._id %>" === "54a879fbd1413f814bb9937f") {
+        <% defaultBoardId = board._id; %>
+        console.log("Activating tab #tabs-<%= board._id %>");
+        $("#tabs-<%= board._id %>").click(function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        });
+      };
     <% }); %>
 
     $('#addColumnModal').on('shown.bs.modal', function (e) {
