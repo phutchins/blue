@@ -69,7 +69,8 @@ module.exports = function(app, passport) {
 
   // Projects View
   app.get('/projects', isLoggedIn, function(req, res) {
-    Project.find( function(err, projects) {
+    Project.find().populate('_owner').exec( function(err, projects) {
+      console.log("/projects - ", projects);
       res.render('projects/index.ejs', {
         user : req.user,
         projects : projects
@@ -90,7 +91,7 @@ module.exports = function(app, passport) {
       name         : req.body.name,
       description  : req.body.description,
       last_update  : Date.now(),
-      owner        : req.user._id,
+      _owner        : req.user._id,
     }).save( function( err, project, count ){
       res.redirect( '/' );
     });
@@ -108,7 +109,7 @@ module.exports = function(app, passport) {
     new Board({
       name         : req.body.name,
       last_update  : Date.now(),
-      owner        : req.user._id,
+      _owner        : req.user._id,
     }).save( function( err, board, count ){
       console.log("Board " + board.name + " added with id " + board._id);
       Project.findOneAndUpdate(
@@ -249,30 +250,35 @@ module.exports = function(app, passport) {
   app.post('/card/move', isLoggedIn, function(req, res) {
     var newColumnId = req.body.newColumnId;
     var cardId = req.body.cardId;
-    console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumnId: " + req.body.newColumnId + " boardName: " + req.body.boardName);
+    console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumnId: " + req.body.newColumnId);
     Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, card) {
       var oldColumn = card.membership._column;
       console.log("Move Card (POST): Found card '", card.name, "' with id '",card._id,"'");
-      Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: card._id } }, { safe: true, upsert: false }, function(err, column) {
-        console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
-        if (err) {
-          console.log(err);
-        } else {
-          Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: card._id }}, function(err, column) {
-            console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", column.name, "'");
-            //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
-            card.membership._column = req.body.newColumnId;
-            card.save(function (err) {
-              console.log("Move Card (POST): Saving card after updating column to '", req.body.newColumnId, "'");
-              if (err) {
-                console.log(err);
-              };
+      if (err) {
+        console.log(err);
+      } else {
+        Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: card._id } }, { safe: true, upsert: false }, function(err, column) {
+          console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
+          if (err) {
+            console.log(err);
+          } else {
+            Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: card._id }}, function(err, column) {
+              console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", column.name, "'");
+              //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
+              card.membership._column = req.body.newColumnId;
+              card.save(function (err) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log("Move Card (POST): Saved updates to new column");
+                };
+              });
             });
-          });
-          if (err) { console.log(err) }
-          console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
-        };
-      });
+            if (err) { console.log(err) }
+            console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
+          };
+        });
+      };
     });
   });
 
@@ -339,16 +345,4 @@ module.exports = function(app, passport) {
       // if they aren't redirect them to the home page
       res.redirect('/auth');
   }
-
-  // Create project
-  exports.createProject = function ( req, res ){
-    new Project({
-      name         : req.body.name,
-      description  : req.body.description,
-      last_update  : Date.now(),
-      owner        : user.name,
-    }).save( function( err, project, count ){
-      res.redirect( '/' );
-    });
-  };
 };

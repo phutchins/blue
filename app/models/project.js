@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 var projectSchema = new Schema({
   name: { type: String },
   description: { type: String },
-  owner: { type: String },
+  _owner: { type: mongoose.SchemaTypes.ObjectId,ref: "User" },
   last_update: { type: Date },
   membership: {
     boards: { type: Array },

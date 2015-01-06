@@ -19,7 +19,7 @@
           <h3><span class="fa fa-angle-double-right"></span> <a href="/projects/<%= project.name %>"><%= project.name %></a></h3>
             <p>
               <strong> <%= project.description %></strong><br>
-              <strong>Owner</strong>: <%= project.owner %><br><br>
+              <strong>Owner</strong>: <%= project._owner.local.name %><br><br>
               <a data-method="DELETE" href="/projects/action/delete?id=<%= project.id %>">delete</a>
             </p>
         </div>
