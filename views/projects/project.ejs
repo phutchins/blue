@@ -7,12 +7,6 @@
   <script type = "text/javascript" src="/js/jquery-ui.js"></script>
   <script type = "text/javascript" src="/js/bootstrap.min.js"></script>
   <script type = "text/javascript" src="/js/bootstrap-editable.min.js"></script>
-  <script type = "text/javascript">
-    $(init);
-    function init(){
-      $("#tabs").tabs();
-    }
-  </script>
 </head>
 <body>
 <% include ../header %>
@@ -21,10 +15,10 @@
   <script src="/js/jquery.sortable.js"></script>
   <script>
 
-    console.log("board-column > ul: ", $('.board-column > ul'));
+    //console.log("board-column > ul: ", $('.board-column > ul'));
     $(function() {
       if (typeof($('.board-column > ul')) !== 'undefined') {
-        console.log("board-column > ul: ", $('.board-column > ul'));
+        //console.log("board-column > ul: ", $('.board-column > ul'));
         $('.board-column > ul').sortable({
           connectWith: '.connected',
           dropOnEmpty: true,
@@ -38,8 +32,7 @@
     $('.sortable').sortable({
       items: 'li' ,
       forcePlaceholderSize: true,
-      dropOnEmpty: true,
-      //    placeholder : '<tr><td colspan="7">&nbsp;</td></tr>'
+      dropOnEmpty: true
     });
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
       /*
@@ -114,18 +107,10 @@
       }, 200);
     });
 
-    var defaultBoardId = String;
-    <% boards.forEach( function ( board ) { %>
-      console.log("Looping board._id: <%= board._id %>");
-      if ("<%= board._id %>" === "54a879fbd1413f814bb9937f") {
-        <% defaultBoardId = board._id; %>
-        console.log("Activating tab #tabs-<%= board._id %>");
-        $("#tabs-<%= board._id %>").click(function (e) {
-          e.preventDefault()
-          $(this).tab('show')
-        });
-      };
-    <% }); %>
+    $('#tabList a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    });
 
     $('#addColumnModal').on('shown.bs.modal', function (e) {
       //var button = $('#addColumnButton');

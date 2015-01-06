@@ -1,10 +1,8 @@
-<div id="tabs" class="board tabbable tabs-below">
-    <ul class="nav nav-tabs" role="tablist">
-      <% count = 0; %>
+<div id="tabs" role="tabpanel" class="board tabbable tabs-below">
+    <ul id="tabList" class="nav nav-tabs" role="tablist">
       <% if ( typeof(boards) != 'undefined' ) { %>
         <% boards.forEach( function ( board, index, array ) { %>
-          <% count++ %>
-          <li role="presentation"<% if (index == 0) { %> class="tab active"<% } else { %> class="tab"<% }; %>><a href="#tabs-<%= board.id %>" aria-controls="tabs-<%= board.id %>" data-toggle="tab" role="tab" data-target="#tabs-<%=board.id%>"><%= board.name %></a></li>
+          <li role="presentation" class="tab<% if (defaultBoard._id == board.id) { %> active<% }; %>"><a href="#tabs-<%= board.id %>" aria-controls="tabs-<%= board.id %>" data-toggle="tab" role="tab"><%= board.name %></a></li>
           <!-- <li role="presentation" class="active"><a href="#">Home</a></li> -->
         <% }); %>
       <% }; %>
@@ -13,7 +11,7 @@
     <div class="tab-content" name="<%= project.name %>">
       <% if ( typeof(boards) != 'undefined' ) {%>
         <% boards.forEach( function ( board ) { %>
-          <div role="tab-panel" id="tabs-<%= board.id %>" class="board-container tab-pane fade in">
+          <div role="tabpanel" id="tabs-<%= board.id %>" class="tab-pane board-container fade in<% if (defaultBoard._id == board.id) { %> active<% }; %>">
             <%- include board.ejs %>
           </div>
         <% }); %>

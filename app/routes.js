@@ -279,8 +279,14 @@ module.exports = function(app, passport) {
   app.get('/projects/:projectName', isLoggedIn, function(req, res) {
     var projectName = req.param("projectName");
     console.log("Loading project " + projectName);
-    Project.findOne({ name: projectName }, function(err, project) {
+    Project.findOne({ name: projectName }).populate('membership._defaultBoard').exec( function(err, project) {
       if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
+        console.log("Project (GET): project.membership" + project.membership);
+        if (typeof(project.membership._defaultBoard) == undefined) {
+          console.log("defaultBoard is undefined");
+          console.log("First board is: " + project.membership.boards[0]);
+          project.membership._defaultBoard = project.membership.boards[0];
+        }
         var boards = [];
         var reverseBoards = Array;
         reverseBoards = project.membership.boards.reverse();
@@ -299,12 +305,14 @@ module.exports = function(app, passport) {
           console.log("loop callback");
           req.user.session.lastProject = req.params.projectName;
           console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
+          var defaultBoard = project.membership._defaultBoard;
           res.format({
             html: function() {
               res.render('projects/project.ejs', {
                 user : req.user,
                 boards: boards,
-                project: project
+                project: project,
+                defaultBoard: defaultBoard
               });
             },
             json: function() {
