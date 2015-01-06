@@ -114,36 +114,6 @@
       }, 200);
     });
 
-    $('#resetbtn').click(function() {
-      $('.edit').each(function() {
-        var o = $(this);
-        o.editable('setValue', o.attr('oldValue'))  //clear values
-        .editable('option', 'pk', o.attr('pk'))  //clear pk
-        .removeClass('editable-unsaved')
-        .removeAttr('oldValue');
-      });
-    });
-
-    $('#savebtn').click(function() {
-      $('.edit').editable('submit', {
-        url: '/post',
-        //ajaxOptions: { dataType: 'json' },
-        success: function(data, config) {
-          $(this).removeClass('editable-unsaved') //remove unsaved class
-          .removeAttr('oldValue');  // clear oldValue
-        },
-        error: function(errors) {
-          console.log('error');
-          var msg = '';
-          if(errors && errors.responseText) { //ajax error, errors = xhr object
-            msg = errors.responseText;
-          } else { //validation error (client-side or server-side)
-            $.each(errors, function(k, v) { msg += k+": "+v+"<br>"; });
-          }
-        }
-      });
-    });
-
     var defaultBoardId = String;
     <% boards.forEach( function ( board ) { %>
       <% if (board._id === board._id) { defaultBoardId = board._id; }; %>
@@ -153,12 +123,6 @@
       });
     <% }); %>
 
-    // Use to select default tab
-    // $('#myTab a[href="#profile"]').tab('show')
-    //$('#tabs-' + defaultBoardId + ' a:first').tab('show')
-
-    // Modal control scripts
-    // $('button[data-target="#addColumnModal"]').on('shown.bs.tab', function (e) {
     $('#addColumnModal').on('shown.bs.modal', function (e) {
       //var button = $('#addColumnButton');
       var button = $(e.relatedTarget);
@@ -171,11 +135,8 @@
       console.log("boardId: ",boardId, "projectName: ",projectName);
       $('.board-id-input').val(boardId);
       $('.project-name-input').val(projectName);
-    })
-    //$('button[data-target="#addColumnModal"]').on('shown.bs.tab', function (e) {
-    //    e.target // newly activated tab
-    //      e.relatedTarget // previous active tab
-    //})
+    });
+
     $('#editCardModal').on('show.bs.modal', function(e) {
       //var cardLink = $('#editCard');
       var cardLink = $(e.relatedTarget);
@@ -216,80 +177,15 @@
 
     });
 
-    $('#addCardModal').on('show.bs.modal', function(e) {
+    $('#addCardModal').on('shown.bs.modal', function(e) {
       //var cardLink = $('#editCard');
       var columnLink = $(e.relatedTarget);
-      var columnId = columnLink.data('columnid');
-      var editCardModul2 = e.target;
-      var editCardModul = this;
-      var projectName = cardLink.data('projectname');
+      console.log("addCardModul - ", columnLink.data('column-id'));
+      var columnId = columnLink.data('column-id');
       var card = {};
-      console.log("editCardModal - JS Hook fired");
-
-      $.ajax({
-        type: "GET",
-        //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
-        url: "/cards/" + cardId,
-        success: function(returnCard){
-          console.log("Card: ", returnCard.data);
-          card = JSON.parse(returnCard.data);
-          console.log("editCardModal Found Card: ", card);
-          console.log("cardName:", card['name']);
-          console.log("typeof:", typeof(card));
-          var cardName = card['name'];
-          var cardDescription = card['description'];
-
-          console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
-          $('.column-id-input').val(columnId);
-          $('.project-name-input').val(projectName);
-          $('.card-id-input').val(cardId);
-          $('.card-name-input').val(cardName);
-          $('.card-description-input').val(cardDescription);
-          $('#cardName').focus();
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          alert("ERROR: " + errorThrown);
-          console.log("ERROR: " + errorThrown);
-        }
-      });
-    /**
-    var content = $($("#FormDialog").html());
-    OpenDialogForSelectionAdmItem('Enter Info', content, function() {
-        alert('saved');
+      $('.column-id-input').val(columnId);
+      $('#cardName').focus();
     });
 
-    $("body").on("click", "#deletePhone", function() {
-        var msg = "Are you sure you want to delete this phone number?";
-        OpenDialogForSelectionAdmItem('Delete?', msg, function() {
-            alert('deleted');
-        },1);
-    });
-
-    function OpenDialogForSelectionAdmItem(title, content, callback, tier) {
-        tier = tier || 0;
-        var dlg = new BootstrapDialog({
-            title: title,
-            message: content,
-            buttons: [{
-                label: 'Save',
-                cssClass: 'btn-primary',
-                id: 'btnSave',
-                action: function (dialog) {
-                    if (callback !== "") { callback(); }
-                    dialog.close();
-                }
-            },{
-                label: 'Close',
-                cssClass: 'btn',
-                id: 'btnClose',
-                action: function (dialog) {
-                    dialog.close();
-                }
-            }]
-        });
-
-        dlg.open();
-    }
-    */
   </script>
 <% include ../footer %>

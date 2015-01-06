@@ -1,3 +1,7 @@
+.container-fluid {
+  padding-right: 0px;
+  padding-left: 0px;
+}
 .card-link a:hover {
   display: block;
 }
@@ -194,4 +198,8 @@ text-decoration: none;
 }
 .editable-blue {
   border-bottom: none;
+}
+.add-column-button {
+  display: inline-block;
+  margin-top: 5px;
 }

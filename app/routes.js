@@ -155,29 +155,30 @@ module.exports = function(app, passport) {
     });
   });
 
-  // Make this post to /card
-  app.post('/projects/action/createCard', isLoggedIn, function(req, res) {
-    var projectName = req.body.projectName;
-    var columnId = req.body.columnId;
+  // Make this post to /cards
+  app.post('/cards/', isLoggedIn, function(req, res) {
+    var columnId = req.param('columnId');
+    var name = req.param('name');
+    var description = req.param('description');
     console.log("createCard (POST): columnId - ", columnId);
     new Card({
-      name: req.body.name,
-      description: req.body.description,
+      name: req.param('name'),
+      description: req.param('description'),
       membership: {
         _column: mongoose.Types.ObjectId(columnId),
-        //_column: columnId,
         owner: req.user._id
       }
     }).save( function( err, card, count ){
-      console.log("Card " + card.name + " added to " + card.columnId);
+      console.log("Card " + card.name + " added to " + card.membership._column);
       Column.findOneAndUpdate(
-        { "_id": req.body.columnId },
+        { "_id": req.param('columnId') },
         { $push: { "_cards": card._id } },
         function(err, column) {
           if (err) console.log(err);
         }
       )
-      res.redirect( '/projects/' + projectName );
+      //res.redirect( '/projects/' + projectName );
+      res.redirect(req.get('referer'));
     });
   });
 

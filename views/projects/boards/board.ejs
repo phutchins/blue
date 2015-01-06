@@ -16,10 +16,10 @@
         </li>
       <% }); %>
     </ul>
-    <a href="/projects/action/createCard?columnId=<%= column._id %>&projectName=<%= project.name %>" class="add-card"> Add a card...</a>
+    <a id="addCardLink" data-toggle="modal" data-target="#addCardModal" data-column-id="<%= column._id %>" class="add-card"> Add a card...</a>
   </div>
 <% }); %>
-  <div>
+  <div class="add-column-button">
     <button id="addColumnButton" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addColumnModal" data-boardid="<%= board._id %>" data-projectname="<%= project.name %>">+</button>
   </div>
 </section>
