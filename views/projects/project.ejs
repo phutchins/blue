@@ -35,38 +35,40 @@
       dropOnEmpty: true
     });
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
-      /*
-        This event is triggered when the user stopped sorting and the DOM position has changed.
-        ui.item contains the current dragged element.
-        ui.item.index() contains the new index of the dragged element
-        ui.oldindex contains the old index of the dragged element
-        ui.startparent contains the element that the dragged item comes from
-        ui.endparent contains the element that the dragged item was added to
-      */
-      //$.GET('/projects/action/moveCard', {cardId: card.cardId, boardName: board.name, columnName: ui.endparent}, function(data){
-      console.log("UI: ", ui);
-      console.log("parent node id (target column):" + ui.item[0].parentNode.id); // Where the card is moving to
-      console.log("item id:" + ui.item[0].id);
-      console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
-      //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
-      console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
+      if (this === ui.item.parent()[0]) {
+        /*
+          This event is triggered when the user stopped sorting and the DOM position has changed.
+          ui.item contains the current dragged element.
+          ui.item.index() contains the new index of the dragged element
+          ui.oldindex contains the old index of the dragged element
+          ui.startparent contains the element that the dragged item comes from
+          ui.endparent contains the element that the dragged item was added to
+        */
+        //$.GET('/projects/action/moveCard', {cardId: card.cardId, boardName: board.name, columnName: ui.endparent}, function(data){
+        console.log("UI: ", ui);
+        console.log("parent node id (target column):" + ui.item[0].parentNode.id); // Where the card is moving to
+        console.log("item id:" + ui.item[0].id);
+        console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
+        //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
+        console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
 
-      var order = $('ul.sortable li').map(function(){
-        console.log($(this).data("id"));
-        return $(this).data("id");
-      }).get();
+        var order = $('ul.sortable li').map(function(){
+          console.log($(this).data("id"));
+          return $(this).data("id");
+        }).get();
 
-      // Should be a patch instead of post
-      $.ajax({
-        type: "POST",
-        //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
-        url: "/card/move",
-        dataType: "json",
-        data: {cardId: ui.item[0].id, newColumnId: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
-        success: function(order){
-          console.log("Order: ", order);
-        }
-      });
+        // Should be a patch instead of post
+        $.ajax({
+          type: "POST",
+          //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
+          url: "/card/move",
+          dataType: "json",
+          data: {cardId: ui.item[0].id, newColumnId: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
+          success: function(order){
+            console.log("Order: ", order);
+          }
+        });
+      };
     });
 
     // setting defaults for the editable

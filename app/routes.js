@@ -70,7 +70,6 @@ module.exports = function(app, passport) {
   // Projects View
   app.get('/projects', isLoggedIn, function(req, res) {
     Project.find().populate('_owner').exec( function(err, projects) {
-      console.log("/projects - ", projects);
       res.render('projects/index.ejs', {
         user : req.user,
         projects : projects
@@ -156,7 +155,7 @@ module.exports = function(app, passport) {
     });
   });
 
-  // Make this post to /cards
+  // Create a card and add it to a column
   app.post('/cards/', isLoggedIn, function(req, res) {
     var columnId = req.param('columnId');
     var name = req.param('name');
@@ -257,7 +256,9 @@ module.exports = function(app, passport) {
       if (err) {
         console.log(err);
       } else {
-        Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: card._id } }, { safe: true, upsert: false }, function(err, column) {
+        // change this to findOne and then save manually to avoid no erroring
+        Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: mongoose.Types.ObjectId(card._id) } }, { safe: true, upsert: false }, function(err, column) {
+          console.log("Move Card (POST): Column cards is now - ", column._cards);
           console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
           if (err) {
             console.log(err);
