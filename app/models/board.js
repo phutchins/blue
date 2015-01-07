@@ -13,7 +13,7 @@ var comment = new Schema({
 // define the schema for our user model
 var boardSchema = new Schema({
   name: { type: String },
-  owner: { type: String },
+  _owner: { type: mongoose.SchemaTypes.ObjectId,ref: "User" },
   last_update: { type: Date },
   _columns: [ { type: mongoose.SchemaTypes.ObjectId,ref: "Column" } ],
 });

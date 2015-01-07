@@ -10,7 +10,7 @@ var projectSchema = new Schema({
   _owner: { type: mongoose.SchemaTypes.ObjectId,ref: "User" },
   last_update: { type: Date },
   membership: {
-    boards: { type: Array },
+    _boards: [ { type: mongoose.SchemaTypes.ObjectId,ref: "Board" } ],
     _defaultBoard: { type: mongoose.SchemaTypes.ObjectId,ref: "Board" },
   }
 });

@@ -7,6 +7,7 @@ var cardSchema = new Schema({
     //_column: { type: String },
     _column: { type: mongoose.SchemaTypes.ObjectId,ref: "Column" },
     position: { type: Number },
+    // make this _owner and reference
     owner: { type: String },
     members: [ { type: String } ]
   },

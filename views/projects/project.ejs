@@ -128,6 +128,13 @@
       $('.project-name-input').val(projectName);
     });
 
+    $('#addBoardModal').on('shown.bs.modal', function (e) {
+      var button = $(e.relatedTarget);
+      var projectName = button.data('project-name');
+      console.log("button.data: ", button.data('project-name'));
+      $('.project-name-input').val(projectName);
+    });
+
     $('#editCardModal').on('show.bs.modal', function(e) {
       //var cardLink = $('#editCard');
       var cardLink = $(e.relatedTarget);

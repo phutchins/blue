@@ -103,22 +103,26 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.post('/projects/action/createBoard', isLoggedIn, function(req, res) {
-    projectName = req.body.projectName;
+  app.post('/board', isLoggedIn, function(req, res) {
+    var projectName = req.param('project-name');
+    var boardName = req.param('board-name');
     new Board({
-      name         : req.body.name,
-      last_update  : Date.now(),
-      _owner        : req.user._id,
+      name         : boardName,
+      last_update  : Date.now()
+      //_owner        : mongoose.Types.ObjectId(req.user._id),
     }).save( function( err, board, count ){
       console.log("Board " + board.name + " added with id " + board._id);
+      console.log("Adding board '" + board.name + "' to project '" + projectName + "'");
+      var boardId = board._id;
       Project.findOneAndUpdate(
         { "name": projectName },
-        { $push: { "membership.boards": board._id }},
+        { $push: { "membership._boards": boardId }},
         function(err, project) {
+          console.log("/board - updated project '" + project.name + "'");
           if (err) console.log(err);
+          res.redirect( '/projects/' + projectName );
         }
       )
-      res.redirect( '/projects/' + projectName );
     });
   });
 
@@ -285,41 +289,53 @@ module.exports = function(app, passport) {
 
   app.get('/projects/:projectName', isLoggedIn, function(req, res) {
     var projectName = req.param("projectName");
+    var defaultBoardId = "";
     console.log("Loading project " + projectName);
-    Project.findOne({ name: projectName }).populate('membership._defaultBoard').exec( function(err, project) {
-      if (typeof project.membership != 'undefined' && project.membership.boards[0] != 'undefined' && 0 < project.membership.boards.length) {
-        console.log("Project (GET): project.membership" + project.membership);
-        if (typeof(project.membership._defaultBoard) == undefined) {
-          console.log("defaultBoard is undefined");
-          console.log("First board is: " + project.membership.boards[0]);
-          project.membership._defaultBoard = project.membership.boards[0];
-        }
+    // TODO: This should look up by projectId not name
+    Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
+      console.log("project.membership: ", project.membership);
+      if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
         var boards = [];
         var reverseBoards = Array;
-        reverseBoards = project.membership.boards.reverse();
-        console.log("Project (GET): reverseBoards - ",reverseBoards);
-        console.log("Project (GET): boards - ",project.membership.boards);
-        async.each(reverseBoards, function(boardId, boardsCallback) {
-          Board.findOne({ _id: boardId }).populate('_columns').exec( function(err, board) {
-            console.log('looping board ' + board.name);
-            Card.populate(board, { path: '_columns._cards' }, function(err, populatedBoard) {
-              boards.push(board);
-              boardsCallback();
-            }, { sort: [['_id', 'ascending' ]] } );
+
+        if (typeof project.membership._defaultBoard == "undefined") {
+          console.log("defaultBoard is undefined");
+          console.log("Project membership is: " + project.membership);
+          project.membership._defaultBoard = project.membership._boards[0];
+          defaultBoardId = project.membership._boards[0]._id;
+          console.log("in set block defaultBoardId is '" + defaultBoardId + "'");
+          project.save( function(err) {
+            if (err) {
+              console.log(err);
+            }
           });
-        }, function(err) {
+        } else {
+          defaultBoardId = project.membership._defaultBoard._id;
+          console.log("defaultBoardId is '" + defaultBoardId + "'");
+        };
+
+        console.log("Project (GET): boards - ",project.membership._boards);
+
+        // Maybe do (project.membership._boards, { path: '_columns._cards'}...
+        Card.populate(project, { path: 'membership._boards._columns._cards' }, function(err, populatedProject) {
           if (err) { return console.log(err); }
-          console.log("loop callback");
-          req.user.session.lastProject = req.params.projectName;
+
+          console.log("Boards before sort: ", populatedProject.membership._boards);
+          var boards = populatedProject.membership._boards.toObject();
+          boards.sort(function(b1, b2) { return b1._id - b2._id; });
+          console.log("Boards after sort -type- (", typeof boards, "): ", boards);
+
           console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
-          var defaultBoard = project.membership._defaultBoard;
+          req.user.session.lastProject = populatedProject.name;
+          console.log("Before render project, defaultBoardId is '" + defaultBoardId + "'");
           res.format({
             html: function() {
               res.render('projects/project.ejs', {
                 user : req.user,
-                boards: boards,
-                project: project,
-                defaultBoard: defaultBoard
+                //boards: boards,
+                boards: populatedProject.membership._boards,
+                project: populatedProject,
+                defaultBoardId: defaultBoardId
               });
             },
             json: function() {
@@ -327,7 +343,6 @@ module.exports = function(app, passport) {
             }
           });
         });
-        console.log("Boards: " + boards);
       } else {
         res.render('projects/project.ejs', {
           user : req.user,
