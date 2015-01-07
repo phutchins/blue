@@ -295,9 +295,6 @@ module.exports = function(app, passport) {
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
       console.log("project.membership: ", project.membership);
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
-        var boards = [];
-        var reverseBoards = Array;
-
         if (typeof project.membership._defaultBoard == "undefined") {
           console.log("defaultBoard is undefined");
           console.log("Project membership is: " + project.membership);
@@ -317,30 +314,28 @@ module.exports = function(app, passport) {
         console.log("Project (GET): boards - ",project.membership._boards);
 
         // Maybe do (project.membership._boards, { path: '_columns._cards'}...
-        Card.populate(project, { path: 'membership._boards._columns._cards' }, function(err, populatedProject) {
-          if (err) { return console.log(err); }
+        Column.populate(project, { path: 'membership._boards._columns' }, function(err, projectPopulatedColumns) {
+          console.log("projectPopulatedColumns: ", projectPopulatedColumns);
+          Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
+            if (err) { return console.log(err); }
+            console.log("project: ", project);
+            console.log("projectPopulatedCards: ", projectPopulatedCards);
+            console.log("colmn 1 : ",projectPopulatedCards.membership._boards[0]._columns[0]);
 
-          console.log("Boards before sort: ", populatedProject.membership._boards);
-          var boards = populatedProject.membership._boards.toObject();
-          boards.sort(function(b1, b2) { return b1._id - b2._id; });
-          console.log("Boards after sort -type- (", typeof boards, "): ", boards);
+            console.log("Boards before sort: ", projectPopulatedCards.membership._boards);
+            var boards = projectPopulatedCards.membership._boards.toObject();
+            boards.sort(function(b1, b2) { return b1._id - b2._id; });
+            console.log("Boards after sort -type- (", typeof boards, "): ", boards);
 
-          console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
-          req.user.session.lastProject = populatedProject.name;
-          console.log("Before render project, defaultBoardId is '" + defaultBoardId + "'");
-          res.format({
-            html: function() {
-              res.render('projects/project.ejs', {
-                user : req.user,
-                //boards: boards,
-                boards: populatedProject.membership._boards,
-                project: populatedProject,
-                defaultBoardId: defaultBoardId
-              });
-            },
-            json: function() {
-              res.send({project: project, boards: boards});
-            }
+            console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
+            req.user.session.lastProject = projectPopulatedCards.name;
+            console.log("Before render project, defaultBoardId is '" + defaultBoardId + "'");
+            res.render('projects/project.ejs', {
+              user : req.user,
+              boards : projectPopulatedCards.membership._boards,
+              project : projectPopulatedCards,
+              defaultBoardId : defaultBoardId
+            });
           });
         });
       } else {
