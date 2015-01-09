@@ -85,7 +85,7 @@ module.exports = function(app, passport) {
 
 
   // process the project creation form
-  app.post('/projects/action/createProject', isLoggedIn, function(req, res) {
+  app.post('/projects/', isLoggedIn, function(req, res) {
     new Project({
       name         : req.body.name,
       description  : req.body.description,
