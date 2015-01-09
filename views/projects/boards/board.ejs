@@ -5,7 +5,6 @@
     <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
       <% column._cards.forEach( function ( card ) { %>
         <li draggable=true class="card" id="<%= card._id %>">
-          <!-- <a style="card-link" href="/projects/action/editCard?cardId=<%= card._id %>&columnId=<%= column.id %>&projectName=<%= project.name %>"> -->
           <a id="editCard" href="#editCardModal" style="card-link" data-toggle="modal" data-cardid="<%= card._id %>" data-columnid="<%= column.id %>" data-projectname="<%=project.name %>">
             <div class="card-name">
               <span class="lead"><%= card.name %></span>

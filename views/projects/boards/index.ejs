@@ -30,7 +30,7 @@
         <h4 class="modal-title" id="myModalLabel">Add Column</h4>
       </div>
       <div class="modal-body">
-        <form action="/column/create" method="post">
+        <form action="/columns/" method="post">
           <input type="hidden" class="board-id-input" name="boardId">
           <input type="hidden" class="project-name-input" name="projectName">
           <div class="form-group">
@@ -55,7 +55,7 @@
         <h4 class="modal-title" id="editCardLabel">Edit Card</h4>
       </div>
       <div class="modal-body">
-        <form action="/projects/action/editCard" method="post">
+        <form action="/cards/update" method="post">
           <input type="hidden" name="columnId" class="column-id-input">
           <input type="hidden" name="projectName" class="project-name-input">
           <input type="hidden" name="cardId" class="card-id-input">
@@ -109,7 +109,7 @@
         <h4 class="modal-title" id="myModalLabel">Add Board</h4>
       </div>
       <div class="modal-body">
-        <form action="/board/" method="post">
+        <form action="/boards/" method="post">
           <input type="hidden" class="project-name-input" name="project-name">
           <div class="form-group">
             <label>Name</label>
