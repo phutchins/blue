@@ -2,16 +2,18 @@
     <ul id="tabList" class="nav nav-tabs" role="tablist">
       <% if ( typeof(boards) != 'undefined' ) { %>
         <% boards.forEach( function ( board, index, array ) { %>
-          <li role="presentation" class="tab<% if (defaultBoard._id == board.id) { %> active<% }; %>"><a href="#tabs-<%= board.id %>" aria-controls="tabs-<%= board.id %>" data-toggle="tab" role="tab"><%= board.name %></a></li>
+          <li role="presentation" class="tab<% if (defaultBoardId == board.id) { %> active<% }; %>"><a href="#tabs-<%= board.id %>" aria-controls="tabs-<%= board.id %>" data-toggle="tab" role="tab"><%= board.name %></a></li>
           <!-- <li role="presentation" class="active"><a href="#">Home</a></li> -->
         <% }); %>
       <% }; %>
-        <li role="presentation" class="tab"><a href="/projects/action/createBoard?projectName=<%=encodeURIComponent(project.name) %>"> + </a></li>
+      <li role="presentation" class="tab"><a id="addBoardLink" data-toggle="modal" data-target="#addBoardModal" data-project-name="<%= project.name %>"> + </a></li>
     </ul>
     <div class="tab-content" name="<%= project.name %>">
       <% if ( typeof(boards) != 'undefined' ) {%>
         <% boards.forEach( function ( board ) { %>
-          <div role="tabpanel" id="tabs-<%= board.id %>" class="tab-pane board-container fade in<% if (defaultBoard._id == board.id) { %> active<% }; %>">
+          <div role="tabpanel" id="tabs-<%= board.id %>" class="tab-pane board-container fade in<% if (defaultBoardId == board.id) { %> active<% }; %>">
+            <!-- <%= project.membership._defaultBoard._id %> -->
+            <!-- <%= board.id %> -->
             <%- include board.ejs %>
           </div>
         <% }); %>
@@ -93,6 +95,30 @@
           </div>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-warning btn-lg">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addBoardModal" tabindex="-1" role="dialog" aria-labelledby="addBoardModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Add Board</h4>
+      </div>
+      <div class="modal-body">
+        <form action="/board/" method="post">
+          <input type="hidden" class="project-name-input" name="project-name">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="board-name-input form-control" name="board-name">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
         </form>
       </div>
     </div>
