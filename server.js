@@ -17,7 +17,6 @@ var session      = require('express-session');
 
 var configDB = require('./config/database.js');
 var configRedis = require('./config/redis.js');
-
 var RedisStore = require('connect-redis')(session);
 
 
@@ -65,20 +64,9 @@ app.use(session({
     maxAge : 604800 // one week
   }
 }));
-//app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+
 app.use(passport.initialize());
-app.use(passport.session({
-  secret: "y0urR4nd0mT0k3n",
-  store : new RedisStore({
-    host : configRedis.host,
-    port : configRedis.port,
-    user : configRedis.username,
-    pass : configRedis.password
-  }),
-  cookie : {
-    maxAge : 604800 // one week
-  }
-}));
+app.use(passport.session());
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
