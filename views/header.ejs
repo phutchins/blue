@@ -9,7 +9,7 @@
       <div class="header-projects header-button">
         <a href="/projects">
           <span class="header-projects-icon fa fa-asterisk"></span>
-          <span class="header-projects-text">Projects</span>
+          <span class="header-projects-text">Projects<% if (typeof project != 'undefined') { %> > <%= project.name %><% };%></span>
         </a>
       </div>
       <div class="header-search">
