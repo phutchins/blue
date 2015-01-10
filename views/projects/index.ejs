@@ -8,6 +8,7 @@
   <script type = "text/javascript" src="/js/jquery-ui.js"></script>
   <script type = "text/javascript" src="/js/bootstrap.min.js"></script>
   <script type = "text/javascript" src="/js/bootstrap-editable.min.js"></script>
+  <script type = "text/javascript" src="/js/bootbox.min.js"></script>
 </head>
 <body>
 <% include ../header %>
@@ -25,11 +26,23 @@
             <p>
               <strong> <%= project.description %></strong><br>
               <strong>Owner</strong>: <%= project._owner.local.name %><br><br>
-              <a id="<%= project.id %>" class="project-delete-button">delete</a>
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-xs">Action</button>
+                <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <span class="caret"></span>
+                  <span class="sr-only">Options</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Submit Request</a></li>
+                  <li><a href="#">Share</a></li>
+                  <li><a href="#">Edit</a></li>
+                  <li class="divider"></li>
+                  <li><a id="<%= project.id %>" class="project-delete-link">Delete</a></li>
+                </ul>
+              </div>
             </p>
         </div>
       </div>
-      <!-- </a> -->
     <% }); %>
   </div>
 
@@ -65,43 +78,31 @@
     $(function(){
 
       // Delete Project
-      $('.project-delete-button').click(function(){
+      $('.project-delete-link').click(function(){
 
         var projectId = this.id;
         console.log("Deleting project with id '" + projectId + "'");
 
-        $("#dialog-confirm" ).dialog({
-          resizable: false,
-          height:180,
-          width:400,
-          modal: true,
-          buttons: {
-            "Delete": function() {
-              $( this ).dialog( "close" );
-              $.ajax({
-                   type: "DELETE",
-                   url: "/projects/" + projectId,
-                   success: function(msg) {
-                    window.location.replace("projects");
-                   },
-                   error: function(msg) {
-                    alert("I was unable to delete the Project - something has gone wrong, apologies!");
-                   }
-              });
-            },
-            Cancel: function() {
-              $( this ).dialog( "close" );
-            }
-          }
+        bootbox.confirm("Are you sure?", function(result) {
+          if (result) {
+            $.ajax({
+              type: "DELETE",
+              url: "/projects/" + projectId,
+              success: function(msg) {
+                window.location.reload();
+                window.location.replace("projects");
+                Example.show("Project deleted.");
+              },
+              error: function(msg) {
+                Example.show("Error: " + msg);
+              }
+            });
+          } else {
+            Example.show("nevermind...");
+          };
         });
-
       });
-
     });
   </script>
-
-  <div id="dialog-confirm" style="display: none;" title="Delete Project?">
-    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This will be permanently deleted and cannot be recovered. Are you sure?</p>
-  </div>
 
 <% include ../footer.ejs %>
