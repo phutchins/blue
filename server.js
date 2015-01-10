@@ -61,7 +61,7 @@ app.use(session({
     pass : configRedis.password
   }),
   cookie : {
-    maxAge : 604800 // one week
+    maxAge : 604800000 // one week
   }
 }));
 

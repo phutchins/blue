@@ -8,6 +8,7 @@
   <script type = "text/javascript" src="/js/jquery-ui.js"></script>
   <script type = "text/javascript" src="/js/bootstrap.min.js"></script>
   <script type = "text/javascript" src="/js/bootstrap-editable.min.js"></script>
+  <script type = "text/javascript" src="/js/bootbox.min.js"></script>
 </head>
 <body>
 <% include ../header %>
@@ -25,11 +26,23 @@
             <p>
               <strong> <%= project.description %></strong><br>
               <strong>Owner</strong>: <%= project._owner.local.name %><br><br>
-              <a data-method="DELETE" href="/projects/action/delete?id=<%= project.id %>">delete</a>
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary btn-xs">Action</button>
+                <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <span class="caret"></span>
+                  <span class="sr-only">Options</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Submit Request</a></li>
+                  <li><a href="#">Share</a></li>
+                  <li><a href="#">Edit</a></li>
+                  <li class="divider"></li>
+                  <li><a id="<%= project.id %>" class="project-delete-link">Delete</a></li>
+                </ul>
+              </div>
             </p>
         </div>
       </div>
-      <!-- </a> -->
     <% }); %>
   </div>
 
@@ -60,5 +73,36 @@
       </div>
     </div>
   </div>
+
+  <script>
+    $(function(){
+
+      // Delete Project
+      $('.project-delete-link').click(function(){
+
+        var projectId = this.id;
+        console.log("Deleting project with id '" + projectId + "'");
+
+        bootbox.confirm("Are you sure?", function(result) {
+          if (result) {
+            $.ajax({
+              type: "DELETE",
+              url: "/projects/" + projectId,
+              success: function(msg) {
+                window.location.reload();
+                window.location.replace("projects");
+                Example.show("Project deleted.");
+              },
+              error: function(msg) {
+                Example.show("Error: " + msg);
+              }
+            });
+          } else {
+            Example.show("nevermind...");
+          };
+        });
+      });
+    });
+  </script>
 
 <% include ../footer.ejs %>
