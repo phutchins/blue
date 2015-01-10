@@ -42,7 +42,6 @@ module.exports = function(app, passport) {
 
   // show the signup form
   app.get('/signup', function(req, res) {
-
       // render the page and pass in any flash data if it exists
       res.render('signup.ejs', { message: req.flash('signupMessage') });
   });
@@ -77,13 +76,6 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.get('/projects/action/createProject', isLoggedIn, function(req, res) {
-    res.render('projects/action/createProject.ejs', {
-      user : req.user
-    });
-  });
-
-
   // process the project creation form
   app.post('/projects/', isLoggedIn, function(req, res) {
     new Project({
@@ -111,14 +103,14 @@ module.exports = function(app, passport) {
       last_update  : Date.now()
       //_owner        : mongoose.Types.ObjectId(req.user._id),
     }).save( function( err, board, count ){
-      console.log("Board " + board.name + " added with id " + board._id);
-      console.log("Adding board '" + board.name + "' to project '" + projectName + "'");
+      console.log("/boards/ - Board " + board.name + " added with id " + board._id);
+      console.log("/boards/ - Adding board '" + board.name + "' to project '" + projectName + "'");
       var boardId = board._id;
       Project.findOneAndUpdate(
         { "name": projectName },
         { $push: { "membership._boards": boardId }},
         function(err, project) {
-          console.log("/board - updated project '" + project.name + "'");
+          console.log("/boards/ - updated project '" + project.name + "'");
           if (err) console.log(err);
           res.redirect( '/projects/' + projectName );
         }
@@ -126,37 +118,27 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.post('/column/create', isLoggedIn, function(req, res) {
+  app.post('/columns/', isLoggedIn, function(req, res) {
     var boardId = req.param('boardId');
     var projectName = req.param('projectName');
-    console.log("/column/create - DEBUG - boardId: ",boardId);
-    console.log("/column/create - DEBUG - projectName: ",projectName);
+    console.log("(POST) /columns/ - DEBUG - boardId: ",boardId);
+    console.log("(POST) /columns/ - DEBUG - projectName: ",projectName);
     new Column({
       name : req.param("columnName")
     }).save( function(err, column, count) {
-      console.log("Column '", column.name, "' created with id '", column._id, "'");
-      console.log("/column/create - DEBUG - boardId: ",boardId);
+      console.log("(POST) /columns/ - Column '", column.name, "' created with id '", column._id, "'");
+      console.log("(POST) /columns/ - DEBUG - boardId: ",boardId);
       Board.findOneAndUpdate({ _id : mongoose.Types.ObjectId(boardId) }, { $push : { "_columns" : column._id }}, function(err, board) {
-        console.log("/column/create - INFO - column inside of Board.findOneAndUpdate: ",column);
+        console.log("(POST) /columns/ - INFO - column inside of Board.findOneAndUpdate: ",column);
         if (err) {
-          console.log("/column/create - ERROR - adding column to board");
+          console.log("(POST) /columns/ - ERROR - adding column to board");
           console.log(err);
         } else {
-          console.log("Column '", column.name, "' added to board '",board.name,"'");
+          console.log("(POST) /columns/ - Column '", column.name, "' added to board '",board.name,"'");
         }
       });
     });
     res.redirect( '/projects/' + projectName );
-  });
-
-  app.get('/projects/action/createCard', isLoggedIn, function(req, res) {
-    console.log("createCard (GET): columnId - ", req.query.columnId);
-    res.render('projects/action/createCard.ejs', {
-      // todo: find out why crashes without user even though its globallly defined
-      user : req.user,
-      columnId: req.query.columnId,
-      projectName: req.param("projectName")
-    });
   });
 
   // Create a card and add it to a column
@@ -164,7 +146,7 @@ module.exports = function(app, passport) {
     var columnId = req.param('columnId');
     var name = req.param('name');
     var description = req.param('description');
-    console.log("createCard (POST): columnId - ", columnId);
+    console.log("(POST) /cards/ - createCard (POST): columnId - ", columnId);
     new Card({
       name: req.param('name'),
       description: req.param('description'),
@@ -173,7 +155,7 @@ module.exports = function(app, passport) {
         owner: req.user._id
       }
     }).save( function( err, card, count ){
-      console.log("Card " + card.name + " added to " + card.membership._column);
+      console.log("(POST) /cards/ - Card " + card.name + " added to " + card.membership._column);
       Column.findOneAndUpdate(
         { "_id": req.param('columnId') },
         { $push: { "_cards": card._id } },
@@ -186,21 +168,8 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.get('/projects/action/editCard', isLoggedIn, function(req, res) {
-    console.log("Edit Card (GET): Looking up card with ID '" + req.query.cardId + "'");
-    Card.findById( req.query.cardId, function ( err, card ) {
-      console.log("Edit Card (GET): Found card " + card);
-      res.render('projects/action/editCard.ejs', {
-        user: req.user,
-        card: card,
-        columnId: req.param("columnId"),
-        projectName: req.param("projectName"),
-      });
-    });
-  });
-
-  app.post('/projects/action/editCard', isLoggedIn, function(req, res) {
-    console.log("Edit Card (POST): Saving updates for card with id '", req.param("cardId"), "'");
+  app.post('/cards/update', isLoggedIn, function(req, res) {
+    console.log("(PATCH) /cards/ - Edit Card (POST): Saving updates for card with id '", req.param("cardId"), "'");
     Card.findOneAndUpdate(
       { "_id": req.param("cardId") },
       { $set: { "name": req.param("cardName"), "description": req.param("cardDescription") }, upsert: true },
@@ -212,7 +181,7 @@ module.exports = function(app, passport) {
   });
 
   // change this to /cards/:cardId with app.delete
-  app.get('/cards/deleteCard', isLoggedIn, function(req, res) {
+  app.delete('/cards/', isLoggedIn, function(req, res) {
     console.log("Delete Card (GET): Deleting card with ID '" + req.query.cardId + "'");
     // Add a message here to populate message field on board or project page with status of result
     Column.update( { "_id": req.query.columnId }, { $pull: { _cards: req.param("columnId") } }, function(err, numAffected) {
@@ -227,11 +196,11 @@ module.exports = function(app, passport) {
   });
 
   app.get('/cards/:cardId', isLoggedIn, function(req, res) {
-    Card.findOne( { "_id": req.param("cardId") }, function(err, card) {
+    Card.findOne( { "_id": req.param('cardId') }, function(err, card) {
       if (err) res.writeHead(500, err.message)
       else if (card == null) res.writeHead(404);
       else {
-        console.log("/cards/" + req.param("cardId") + " - Found card '" + card.name + "'");
+        console.log("/cards/" + req.param('cardId') + " - Found card '" + card.name + "'");
         res.json({ data: JSON.stringify(card) });
       }
     });
@@ -239,12 +208,12 @@ module.exports = function(app, passport) {
 
 
   // delete a project
-  app.get('/projects/action/delete', isLoggedIn, function(req, res) {
-    console.log("Deleting Project with ID '" + req.query.id + "'");
-    Project.findById( req.query.id, function ( err, project ){
+  app.delete('/projects/:projectId', isLoggedIn, function(req, res) {
+    console.log("Deleting Project with ID '" + req.param('projectId') + "'");
+    Project.findById( req.param('projectId'), function ( err, project ){
       project.remove( function ( err, project ){
         if( err ) return next( err );
-        res.redirect( '/' );
+        res.redirect( '/projects' );
       });
     });
   });
