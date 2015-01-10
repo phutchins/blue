@@ -66,6 +66,7 @@ module.exports = function(app, passport) {
       res.redirect('/');
   });
 
+// - PROJECTS - //
   // Projects View
   app.get('/projects', isLoggedIn, function(req, res) {
     Project.find().populate('_owner').exec( function(err, projects) {
@@ -76,8 +77,56 @@ module.exports = function(app, passport) {
     });
   });
 
+  app.get('/projects/:projectName', isLoggedIn, function(req, res) {
+    var projectName = req.param("projectName");
+    var defaultBoardId = "";
+    console.log("(GET) /projects/:projectName - Loading project " + projectName);
+    Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
+      if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
+        if (typeof project.membership._defaultBoard == "undefined") {
+          project.membership._defaultBoard = project.membership._boards[0];
+          defaultBoardId = project.membership._boards[0]._id;
+          project.save( function(err) {
+            if (err) {
+              console.log(err);
+            }
+          });
+        } else {
+          defaultBoardId = project.membership._defaultBoard._id;
+          console.log("defaultBoardId is '" + defaultBoardId + "'");
+        };
+
+        console.log("Project (GET): boards - ",project.membership._boards);
+
+        // Maybe do (project.membership._boards, { path: '_columns._cards'}...
+        Column.populate(project, { path: 'membership._boards._columns' }, function(err, projectPopulatedColumns) {
+          Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
+            if (err) { return console.log(err); }
+
+            var boards = projectPopulatedCards.membership._boards.toObject();
+            boards.sort(function(b1, b2) { return b1._id - b2._id; });
+
+            req.user.session.lastProject = projectPopulatedCards.name;
+            res.render('projects/project.ejs', {
+              user : req.user,
+              boards : projectPopulatedCards.membership._boards,
+              project : projectPopulatedCards,
+              defaultBoardId : defaultBoardId
+            });
+          });
+        });
+      } else {
+        res.render('projects/project.ejs', {
+          user : req.user,
+          project: project
+        });
+      };
+    });
+  });
+
   // process the project creation form
   app.post('/projects/', isLoggedIn, function(req, res) {
+    console.log("(POST) /projects/ - Creating project");
     new Project({
       name         : req.body.name,
       description  : req.body.description,
@@ -88,14 +137,24 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.get('/projects/action/createBoard', isLoggedIn, function(req, res) {
-    res.render('projects/action/createBoard.ejs', {
-      user : req.user,
-      projectName: req.query.projectName
+  // delete a project
+  app.delete('/projects/:projectId', isLoggedIn, function(req, res) {
+    console.log("Deleting Project with ID '" + req.param('projectId') + "'");
+    Project.findById( req.param('projectId'), function ( err, project ){
+      if (project != null) {
+        project.remove( function ( err, project ){
+          if( err ) return next( err );
+          res.redirect( '/projects' );
+        });
+      } else {
+        console.log("(DELETE) /projects/:projectId - [ERROR] Project with id " + req.param('projectId') + " does not exist");
+      };
     });
   });
 
-  app.post('/board/', isLoggedIn, function(req, res) {
+// - BOARDS - //
+  // Create a board
+  app.post('/boards/', isLoggedIn, function(req, res) {
     var projectName = req.param('project-name');
     var boardName = req.param('board-name');
     new Board({
@@ -207,17 +266,6 @@ module.exports = function(app, passport) {
   });
 
 
-  // delete a project
-  app.delete('/projects/:projectId', isLoggedIn, function(req, res) {
-    console.log("Deleting Project with ID '" + req.param('projectId') + "'");
-    Project.findById( req.param('projectId'), function ( err, project ){
-      project.remove( function ( err, project ){
-        if( err ) return next( err );
-        res.redirect( '/projects' );
-      });
-    });
-  });
-
   // Move a card to a different column
   app.post('/card/move', isLoggedIn, function(req, res) {
     var newColumnId = req.body.newColumnId;
@@ -256,53 +304,6 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.get('/projects/:projectName', isLoggedIn, function(req, res) {
-    var projectName = req.param("projectName");
-    var defaultBoardId = "";
-    console.log("(GET) /projects/:projectName - Loading project " + projectName);
-    // TODO: This should look up by projectId not name
-    Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
-      if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
-        if (typeof project.membership._defaultBoard == "undefined") {
-          project.membership._defaultBoard = project.membership._boards[0];
-          defaultBoardId = project.membership._boards[0]._id;
-          project.save( function(err) {
-            if (err) {
-              console.log(err);
-            }
-          });
-        } else {
-          defaultBoardId = project.membership._defaultBoard._id;
-          console.log("defaultBoardId is '" + defaultBoardId + "'");
-        };
-
-        console.log("Project (GET): boards - ",project.membership._boards);
-
-        // Maybe do (project.membership._boards, { path: '_columns._cards'}...
-        Column.populate(project, { path: 'membership._boards._columns' }, function(err, projectPopulatedColumns) {
-          Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
-            if (err) { return console.log(err); }
-
-            var boards = projectPopulatedCards.membership._boards.toObject();
-            boards.sort(function(b1, b2) { return b1._id - b2._id; });
-
-            req.user.session.lastProject = projectPopulatedCards.name;
-            res.render('projects/project.ejs', {
-              user : req.user,
-              boards : projectPopulatedCards.membership._boards,
-              project : projectPopulatedCards,
-              defaultBoardId : defaultBoardId
-            });
-          });
-        });
-      } else {
-        res.render('projects/project.ejs', {
-          user : req.user,
-          project: project
-        });
-      };
-    });
-  });
   // route middleware to make sure a user is logged in
   function isLoggedIn(req, res, next) {
 

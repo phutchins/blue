@@ -74,8 +74,37 @@
     </div>
   </div>
 
+  <div class="bb-alert alert alert-info" style="display:none;">
+    <span>The examples populate this alert with dummy content</span>
+  </div>
+
   <script>
     $(function(){
+      var Notify = (function() {
+        "use strict";
+
+        var elem,
+          hideHandler,
+          that = {};
+
+        that.init = function(options) {
+          console.log("Notify has been init'd");
+          elem = $(options.selector);
+        };
+
+        that.show = function(text) {
+          console.log("Notify.show has been called");
+          clearTimeout(hideHandler);
+
+          elem.find("span").html(text);
+          elem.delay(200).fadeIn().delay(4000).fadeOut();
+        };
+
+        return that;
+      }());
+      Notify.init({
+        "selector": ".bb-alert"
+      });
 
       // Delete Project
       $('.project-delete-link').click(function(){
@@ -85,20 +114,22 @@
 
         bootbox.confirm("Are you sure?", function(result) {
           if (result) {
+            console.log("Result confirmed, deleting project " + projectId);
             $.ajax({
               type: "DELETE",
               url: "/projects/" + projectId,
               success: function(msg) {
-                window.location.reload();
+                //window.location.reload();
                 window.location.replace("projects");
-                Example.show("Project deleted.");
+                console.log("Trying to show Notify");
+                Notify.show("Project deleted.");
               },
               error: function(msg) {
-                Example.show("Error: " + msg);
+                Notify.show("Error: ", msg);
               }
             });
           } else {
-            Example.show("nevermind...");
+            Notify.show("nevermind...");
           };
         });
       });
