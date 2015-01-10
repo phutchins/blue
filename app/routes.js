@@ -103,7 +103,7 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.post('/board', isLoggedIn, function(req, res) {
+  app.post('/board/', isLoggedIn, function(req, res) {
     var projectName = req.param('project-name');
     var boardName = req.param('board-name');
     new Board({
@@ -290,17 +290,13 @@ module.exports = function(app, passport) {
   app.get('/projects/:projectName', isLoggedIn, function(req, res) {
     var projectName = req.param("projectName");
     var defaultBoardId = "";
-    console.log("Loading project " + projectName);
+    console.log("(GET) /projects/:projectName - Loading project " + projectName);
     // TODO: This should look up by projectId not name
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
-      console.log("project.membership: ", project.membership);
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
         if (typeof project.membership._defaultBoard == "undefined") {
-          console.log("defaultBoard is undefined");
-          console.log("Project membership is: " + project.membership);
           project.membership._defaultBoard = project.membership._boards[0];
           defaultBoardId = project.membership._boards[0]._id;
-          console.log("in set block defaultBoardId is '" + defaultBoardId + "'");
           project.save( function(err) {
             if (err) {
               console.log(err);
@@ -315,21 +311,13 @@ module.exports = function(app, passport) {
 
         // Maybe do (project.membership._boards, { path: '_columns._cards'}...
         Column.populate(project, { path: 'membership._boards._columns' }, function(err, projectPopulatedColumns) {
-          console.log("projectPopulatedColumns: ", projectPopulatedColumns);
           Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
             if (err) { return console.log(err); }
-            console.log("project: ", project);
-            console.log("projectPopulatedCards: ", projectPopulatedCards);
-            console.log("colmn 1 : ",projectPopulatedCards.membership._boards[0]._columns[0]);
 
-            console.log("Boards before sort: ", projectPopulatedCards.membership._boards);
             var boards = projectPopulatedCards.membership._boards.toObject();
             boards.sort(function(b1, b2) { return b1._id - b2._id; });
-            console.log("Boards after sort -type- (", typeof boards, "): ", boards);
 
-            console.log("Project (GET): saving project name to session '" + req.params.projectName + "'");
             req.user.session.lastProject = projectPopulatedCards.name;
-            console.log("Before render project, defaultBoardId is '" + defaultBoardId + "'");
             res.render('projects/project.ejs', {
               user : req.user,
               boards : projectPopulatedCards.membership._boards,
