@@ -212,3 +212,7 @@ text-decoration: none;
     padding:1em 1.3em;
     z-index:2000;
 }
+.sortable-placeholder {
+  list-style-type: none;
+  min-height: 40px;
+}
