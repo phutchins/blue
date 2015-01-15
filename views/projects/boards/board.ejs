@@ -1,5 +1,6 @@
 <section id="connected" name="<%= board.name %>">
 <% board._columns.forEach( function ( column ) { %>
+  <% console.log("column: ", column); %>
   <div class="board-column">
     <div class="editable-blue edit board-column-name"><%= column.name %></div>
     <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">

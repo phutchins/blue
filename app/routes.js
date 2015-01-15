@@ -5,6 +5,7 @@ require('../config/database');
 var Project = require('./models/project');
 var Board = require('./models/board');
 var Card = require('./models/card');
+var Comment = require('./models/comment');
 var Column = require('./models/column');
 var mongoose = require('mongoose');
 var async = require('async');
@@ -103,6 +104,7 @@ module.exports = function(app, passport) {
           Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
             if (err) { return console.log(err); }
 
+            console.log("projectPopulatedCards: ", projectPopulatedCards);
             var boards = projectPopulatedCards.membership._boards.toObject();
             boards.sort(function(b1, b2) { return b1._id - b2._id; });
 
@@ -138,13 +140,14 @@ module.exports = function(app, passport) {
   });
 
   // delete a project
+  // TODO: Move this to a post with a data object for _method to determine what to do
   app.delete('/projects/:projectId', isLoggedIn, function(req, res) {
     console.log("Deleting Project with ID '" + req.param('projectId') + "'");
     Project.findById( req.param('projectId'), function ( err, project ){
       if (project != null) {
         project.remove( function ( err, project ){
           if( err ) return next( err );
-          res.redirect( '/projects' );
+          res.status(204).end();
         });
       } else {
         console.log("(DELETE) /projects/:projectId - [ERROR] Project with id " + req.param('projectId') + " does not exist");
@@ -177,6 +180,7 @@ module.exports = function(app, passport) {
     });
   });
 
+// - COLUMNS - //
   app.post('/columns/', isLoggedIn, function(req, res) {
     var boardId = req.param('boardId');
     var projectName = req.param('projectName');
@@ -200,12 +204,14 @@ module.exports = function(app, passport) {
     res.redirect( '/projects/' + projectName );
   });
 
+// - CARDS - //
   // Create a card and add it to a column
   app.post('/cards/', isLoggedIn, function(req, res) {
     var columnId = req.param('columnId');
     var name = req.param('name');
     var description = req.param('description');
-    console.log("(POST) /cards/ - createCard (POST): columnId - ", columnId);
+    console.log("(POST) /cards/ - columnId - ", columnId);
+    console.log("(POST) /cards/ - name: ", name, "description: ",description);
     new Card({
       name: req.param('name'),
       description: req.param('description'),
@@ -214,6 +220,7 @@ module.exports = function(app, passport) {
         owner: req.user._id
       }
     }).save( function( err, card, count ){
+      console.log("(POST) /cards/ - card: ",card);
       console.log("(POST) /cards/ - Card " + card.name + " added to " + card.membership._column);
       Column.findOneAndUpdate(
         { "_id": req.param('columnId') },
@@ -255,11 +262,12 @@ module.exports = function(app, passport) {
   });
 
   app.get('/cards/:cardId', isLoggedIn, function(req, res) {
-    Card.findOne( { "_id": req.param('cardId') }, function(err, card) {
+    Card.findOne( { "_id": req.param('cardId') } ).populate('membership._comments').exec( function(err, card) {
       if (err) res.writeHead(500, err.message)
       else if (card == null) res.writeHead(404);
       else {
         console.log("/cards/" + req.param('cardId') + " - Found card '" + card.name + "'");
+        console.log("(GET) /cards/ - Returning card json - ", card);
         res.json({ data: JSON.stringify(card) });
       }
     });
@@ -302,6 +310,31 @@ module.exports = function(app, passport) {
           };
         });
       };
+    });
+  });
+
+// - COMMENTS - //
+  app.post('/comments/', isLoggedIn, function(req, res) {
+    console.log("(POST) /comments/ - Adding comment...");
+    var cardId = req.param('cardId');
+    var userId = req.user._id;
+    var comment = req.param('comment');
+    console.log("(POST) /comments/ - CardId: " + cardId + " userId: " + userId + " comment: " + comment);
+    new Comment({
+      _user: userId,
+      content: comment,
+      membership: {
+        _card: cardId
+      }
+    }).save( function( err, comment, count ) {
+      console.log("(POST) /comments/ - Comment added - count: ",count);
+      Card.findOneAndUpdate(
+        { "_id": cardId },
+        { $push: { "membership._comments": comment } },
+        function(err, card) {
+          if (err) console.log("(POST) /comments/ [ERROR] Error pushing comment to card");
+        }
+      )
     });
   });
 

@@ -118,15 +118,25 @@
             $.ajax({
               type: "DELETE",
               url: "/projects/" + projectId,
-              success: function(msg) {
-                //window.location.reload();
-                window.location.replace("projects");
-                console.log("Trying to show Notify");
-                Notify.show("Project deleted.");
-              },
-              error: function(msg) {
-                Notify.show("Error: ", msg);
+              complete: function(res, status) {
+                console.log("res.statusCode().status: ", res.statusCode().status);
+                if (res.statusCode().status == 204) {
+                  // Should change the content here instead of a reload
+                  window.location.reload();
+                  // This doesn't work due to the page reload
+                  Notify.show("Project deleted.");
+                } else {
+                  Notify.show("Error deleting project");
+                }
               }
+              //success: function(msg) {
+                //window.location.reload();
+              //  window.location.replace("projects");
+              //  console.log("Trying to show Notify");
+              //},
+              //error: function(msg) {
+              //  Notify.show("Error: ", msg);
+              //}
             });
           } else {
             Notify.show("nevermind...");
