@@ -353,6 +353,7 @@ module.exports = function(app, passport) {
         });
       } else {
         console.log("(POST) /projects/delete - [ERROR] Comment with id " + req.param('commentId') + " does not exist");
+        res.status(404).end();
       };
     });
   });
