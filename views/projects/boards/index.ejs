@@ -67,7 +67,7 @@
             <label>Description</label>
             <textarea class="form-control editcard-card-description-input" rows="3" name="description"></textarea>
           </div>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button name="editCommentSubmitButton" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-warning btn-lg">Save</button>
         </form>
         <form action="/comments/" method="post">
@@ -79,7 +79,7 @@
             <label>Add comment...</label>
             <input type="text" class="form-control edit-card-comment-input" rows="5" name="comment"></textarea>
           </div>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button name="addCommentButton" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-warning btn-lg">Add</button>
         </form>
       </div>

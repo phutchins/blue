@@ -6,6 +6,7 @@ var Project = require('./models/project');
 var Board = require('./models/board');
 var Card = require('./models/card');
 var Comment = require('./models/comment');
+var User = require('./models/user');
 var Column = require('./models/column');
 var mongoose = require('mongoose');
 var async = require('async');
@@ -263,13 +264,15 @@ module.exports = function(app, passport) {
 
   app.get('/cards/:cardId', isLoggedIn, function(req, res) {
     Card.findOne( { "_id": req.param('cardId') } ).populate('membership._comments').exec( function(err, card) {
-      if (err) res.writeHead(500, err.message)
-      else if (card == null) res.writeHead(404);
-      else {
-        console.log("/cards/" + req.param('cardId') + " - Found card '" + card.name + "'");
-        console.log("(GET) /cards/ - Returning card json - ", card);
-        res.json({ data: JSON.stringify(card) });
-      }
+      User.populate(card, { path: 'membership._comments._user' }, function(err, cardPopulated) {
+        if (err) res.writeHead(500, err.message)
+        else if (card == null) res.writeHead(404);
+        else {
+          console.log("/cards/" + req.param('cardId') + " - Found card '" + cardPopulated.name + "'");
+          console.log("(GET) /cards/ - Returning card json - ", cardPopulated);
+          res.json({ data: JSON.stringify(cardPopulated) });
+        }
+      });
     });
   });
 
@@ -335,6 +338,22 @@ module.exports = function(app, passport) {
           if (err) console.log("(POST) /comments/ [ERROR] Error pushing comment to card");
         }
       )
+    });
+  });
+
+  app.get('/comments/delete/:commentId', isLoggedIn, function(req, res) {
+    console.log("(POST) /comments/delete - Deleting comment...");
+    var commentId = req.param('commentId');
+    // remove comment from card here
+    Comment.findById( commentId, function ( err, comment ){
+      if (comment != null) {
+        comment.remove( function ( err, data ){
+          if( err ) return next( err );
+          res.status(204).end();
+        });
+      } else {
+        console.log("(POST) /projects/delete - [ERROR] Comment with id " + req.param('commentId') + " does not exist");
+      };
     });
   });
 
