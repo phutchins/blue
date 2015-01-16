@@ -62,11 +62,11 @@
           //url: "{{ URL::route('chapter.departmentSort', $chapter->slug) }}",
           url: "/card/move",
           dataType: "json",
-          data: {cardId: ui.item[0].id, newColumnId: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()},
-          success: function(order){
+          data: {cardId: ui.item[0].id, newColumnId: ui.item[0].parentNode.id, boardName: $('li[role="tab"].ui-tabs-active a').text()}
+        }).then(function(order){
             console.log("Order: ", order);
           }
-        });
+        );
       };
     });
 
@@ -134,81 +134,93 @@
       $('.project-name-input').val(projectName);
     });
 
-    function populateEditCardModal(cardLink, cardId, columnId, projectName, callback) {
+    function populateEditCardModal(cardId, columnId, projectName, callback) {
       $.ajax({
         type: "GET",
-        url: "/cards/" + cardId,
-        success: function(returnCard){
-          console.log("cardId: ", cardId);
-          console.log("Card: ", returnCard.data);
-          card = JSON.parse(returnCard.data);
-          console.log("editCardModal Found Card: ", card);
-          console.log("cardName:", card['name']);
-          console.log("typeof:", typeof(card));
-          var cardName = card['name'];
-          var cardDescription = card['description'];
-          var cardCommentsHTML = "";
+        url: "/cards/" + cardId
+      }).then( function(returnCard){
+        console.log("cardId: ", cardId);
+        console.log("Card: ", returnCard.data);
+        card = JSON.parse(returnCard.data);
+        console.log("editCardModal Found Card: ", card);
+        console.log("cardName:", card['name']);
+        console.log("typeof:", typeof(card));
+        var cardName = card['name'];
+        var cardDescription = card['description'];
+        var cardCommentsHTML = "";
 
-          console.log("Got success from populateEditCardModal!");
+        console.log("Got success from populateEditCardModal!");
 
-          if (typeof card.membership._comments != 'undefined') {
-            card.membership._comments.forEach( function(comment) {
-              console.log("Comment: ", comment);
-              console.log("Comment._user: ", comment._user);
-              cardCommentsHTML += "<div class=\"card-comment\"> \n"
-                + "<a class=\"card-comment-user-link\" href=\"/users/" + comment._user._id + "\">" + comment._user.local.name + "</a>\n"
-                + "<div class=\"card-comment-content-container\">\n"
-                + "  <div class=\"card-comment-content\"><p class=\"card-comment-content-p\">" + comment.content + "</p></div>\n"
-                + "  </div>\n"
-                + "  <p class=\"comment-meta\"><span \"comment-meta-time\">10 minutes ago</span>\n"
-                + "    <span> - <a class=\"comment-meta-edit\">edit</a> - <a data-comment-id=\"" + comment._id + "\" class=\"comment-meta-delete\">delete</a></span>\n"
-                + "  </p>\n"
-                + "</div>\n";
-            });
-          } else {
-            cardCommentsHTML = "No comments...";
-          };
+        if (typeof card.membership._comments != 'undefined') {
+          card.membership._comments.forEach( function(comment) {
+            console.log("Comment: ", comment);
+            console.log("Comment._user: ", comment._user);
+            cardCommentsHTML += "<div class=\"card-comment\"> \n"
+              + "<a class=\"card-comment-user-link\" href=\"/users/" + comment._user._id + "\">" + comment._user.local.name + "</a>\n"
+              + "<div class=\"card-comment-content-container\">\n"
+              + "  <div class=\"card-comment-content\"><p class=\"card-comment-content-p\">" + comment.content + "</p></div>\n"
+              + "  </div>\n"
+              + "  <p class=\"comment-meta\"><span \"comment-meta-time\">10 minutes ago</span>\n"
+              + "    <span> - <a class=\"comment-meta-edit\">edit</a> - <a data-comment-id=\"" + comment._id + "\" class=\"comment-meta-delete\">delete</a></span>\n"
+              + "  </p>\n"
+              + "</div>\n";
+          });
+        } else {
+          cardCommentsHTML = "No comments...";
+        };
 
-          console.log("cardCommentsHTML: ", cardCommentsHTML);
+        console.log("cardCommentsHTML: ", cardCommentsHTML);
 
-          console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
-          $('.editcard-column-id-input').val(columnId);
-          $('.editcard-project-name-input').val(projectName);
-          $('.editcard-card-id-input').val(cardId);
-          $('.editcard-card-name-input').val(cardName);
-          $('.editcard-card-description-input').val(cardDescription);
-          $('.edit-card-comments').html(cardCommentsHTML);
-          $('.edit-card-comment-input').val("");
-          $('#name').focus();
-          callback();
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          callback(errorThrown);
-        }
+        console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
+        $('.editcard-column-id-input').val(columnId);
+        $('.editcard-project-name-input').val(projectName);
+        $('.editcard-card-id-input').val(cardId);
+        $('.editcard-card-name-input').val(cardName);
+        $('.editcard-card-description-input').val(cardDescription);
+        $('.edit-card-comments').html(cardCommentsHTML);
+        $('.edit-card-comment-input').val("");
+        $('#name').focus();
+        callback();
       });
-      callback();
     };
 
-    $('.add-comment-button').on('click', function(e) {
-      var cardLink = $(e.relatedTarget);
-      var cardId = cardLink.data('cardid');
-      var columnId = cardLink.data('columnid');
-      var projectName = cardLink.data('projectname');
+    $('.add-comment-form').on('submit', function(e) {
+      event.preventDefault();
       var card = {};
+
+      var $form = $( this ),
+        //cardId = $form.find("input[name='comment-cardId']"),
+        //columnId = $form.find("input[name='comment-columnId']"),
+        //projectName = $form.find("input[name='comment-projectName']"),
+        //comment = $form.find("input[name='comment']");
+        cardId = $form.find("input[name='comment-cardId']").val(),
+        columnId = $form.find("input[name='comment-columnId']").val(),
+        projectName = $form.find("input[name='comment-projectName']").val(),
+        comment = $form.find("input[name='comment']").val();
+
       console.log("addCommentButton - JS Hook fired");
 
-      populateEditCardModal(cardLink, cardId, columnId, projectName, function(err) {
-        if (err) {
-          alert("ERROR: " + err);
-          console.log("ERROR: " + err);
-        } else {
-          console.log("modal populated with new comments...");
-        }
-      });
+      $.post("/comments", { cardId: cardId, comment: comment })
+      .done( function( data ) {
+        console.log("Data returned from add comment: ", data);
+        populateEditCardModal(cardId, columnId, projectName, function(err) {
+          if (err) {
+            alert("ERROR: " + err);
+            console.log("ERROR: " + err);
+          } else {
+            console.log("modal populated with new comments...");
+          }
+        });
+      })
     });
 
-    $('.comment-meta-delete').click( function(e) {
-      var cardLink = $(e.relatedTarget);
+    // This is to catch the click on the delete comment link
+    $('.edit-card-comments').on('click', function(e) {
+      var cardLink = $(e.target);
+      if (!cardLink.hasClass('comment-meta-delete')) {
+        console.log("clicked a comment link that is not the delete button");
+        return;
+      };
       var commentId = cardLink.data('commentId');
       var cardId = cardLink.data('cardid');
       var columnId = cardLink.data('columnid');
@@ -218,24 +230,20 @@
 
       $.ajax({
         type: "GET",
-        url: "/comments/delete/" + commentId,
-        success: function(data){
-          console.log("delete card returned: ", data);
-          populateEditCardModal(cardLink, cardId, columnId, projectName, function(err) {
-            if (err) {
-              alert("ERROR: " + err);
-              console.log("ERROR: " + err);
-            } else {
-              console.log("modal populated with new comments...");
-            }
-          });
-        },
-        error: function(XMLHttpRequest, textStatus, err) {
-          console.log("comment-meta-delete: [ERROR]");
-        }
+        url: "/comments/delete/" + commentId
+      }).then( function(data){
+        console.log("delete card returned: ", data);
+        populateEditCardModal(cardId, columnId, projectName, function(err) {
+          if (err) {
+            alert("ERROR: " + err);
+            console.log("ERROR: " + err);
+          } else {
+            console.log("modal populated with new comments...");
+          }
+        });
       });
-
     });
+
     $('#editCardModal').on('show.bs.modal', function(e) {
       //var cardLink = $('#editCard');
       var cardLink = $(e.relatedTarget);
@@ -245,7 +253,7 @@
       var card = {};
       console.log("editCardModal - JS Hook fired");
 
-      populateEditCardModal(cardLink, cardId, columnId, projectName, function(err) {
+      populateEditCardModal(cardId, columnId, projectName, function(err) {
         if (err) {
           alert("ERROR: " + err);
           console.log("ERROR: " + err);
@@ -257,7 +265,6 @@
     });
 
     $('#addCardModal').on('shown.bs.modal', function(e) {
-      //var cardLink = $('#editCard');
       var columnLink = $(e.relatedTarget);
       console.log("addCardModul - ", columnLink.data('column-id'));
       var columnId = columnLink.data('column-id');

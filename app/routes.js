@@ -317,7 +317,7 @@ module.exports = function(app, passport) {
   });
 
 // - COMMENTS - //
-  app.post('/comments/', isLoggedIn, function(req, res) {
+  app.post('/comments', isLoggedIn, function(req, res) {
     console.log("(POST) /comments/ - Adding comment...");
     var cardId = req.param('cardId');
     var userId = req.user._id;
@@ -336,8 +336,9 @@ module.exports = function(app, passport) {
         { $push: { "membership._comments": comment } },
         function(err, card) {
           if (err) console.log("(POST) /comments/ [ERROR] Error pushing comment to card");
+          res.status(200, "Success").end();
         }
-      )
+      );
     });
   });
 
@@ -349,7 +350,7 @@ module.exports = function(app, passport) {
       if (comment != null) {
         comment.remove( function ( err, data ){
           if( err ) return next( err );
-          res.status(204).end();
+          res.status(200, "Success").end();
         });
       } else {
         console.log("(POST) /projects/delete - [ERROR] Comment with id " + req.param('commentId') + " does not exist");
