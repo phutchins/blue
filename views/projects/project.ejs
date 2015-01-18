@@ -134,7 +134,7 @@
       $('.project-name-input').val(projectName);
     });
 
-    function populateEditCardModal(cardId, columnId, projectName, callback) {
+    function populateEditCardModal(cardId, columnId, callback) {
       $.ajax({
         type: "GET",
         url: "/cards/" + cardId
@@ -161,7 +161,7 @@
               + "  <div class=\"card-comment-content\"><p class=\"card-comment-content-p\">" + comment.content + "</p></div>\n"
               + "  </div>\n"
               + "  <p class=\"comment-meta\"><span \"comment-meta-time\">10 minutes ago</span>\n"
-              + "    <span> - <a class=\"comment-meta-edit\">edit</a> - <a data-comment-id=\"" + comment._id + "\" class=\"comment-meta-delete\">delete</a></span>\n"
+              + "    <span> - <a class=\"comment-meta-edit\">edit</a> - <a data-card-id=\"" + cardId + "\" data-column-id=\"" + columnId + "\" data-comment-id=\"" + comment._id + "\" class=\"comment-meta-delete\">delete</a></span>\n"
               + "  </p>\n"
               + "</div>\n";
           });
@@ -171,9 +171,8 @@
 
         console.log("cardCommentsHTML: ", cardCommentsHTML);
 
-        console.log("columnId: ",columnId,"projectName:",projectName,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
+        console.log("columnId: ",columnId,"cardId:",cardId,"cardName:",cardName,"cardDescription:",cardDescription);
         $('.editcard-column-id-input').val(columnId);
-        $('.editcard-project-name-input').val(projectName);
         $('.editcard-card-id-input').val(cardId);
         $('.editcard-card-name-input').val(cardName);
         $('.editcard-card-description-input').val(cardDescription);
@@ -189,13 +188,8 @@
       var card = {};
 
       var $form = $( this ),
-        //cardId = $form.find("input[name='comment-cardId']"),
-        //columnId = $form.find("input[name='comment-columnId']"),
-        //projectName = $form.find("input[name='comment-projectName']"),
-        //comment = $form.find("input[name='comment']");
         cardId = $form.find("input[name='comment-cardId']").val(),
         columnId = $form.find("input[name='comment-columnId']").val(),
-        projectName = $form.find("input[name='comment-projectName']").val(),
         comment = $form.find("input[name='comment']").val();
 
       console.log("addCommentButton - JS Hook fired");
@@ -203,7 +197,7 @@
       $.post("/comments", { cardId: cardId, comment: comment })
       .done( function( data ) {
         console.log("Data returned from add comment: ", data);
-        populateEditCardModal(cardId, columnId, projectName, function(err) {
+        populateEditCardModal(cardId, columnId, function(err) {
           if (err) {
             alert("ERROR: " + err);
             console.log("ERROR: " + err);
@@ -221,10 +215,9 @@
         console.log("clicked a comment link that is not the delete button");
         return;
       };
-      var commentId = cardLink.data('commentId');
-      var cardId = cardLink.data('cardid');
-      var columnId = cardLink.data('columnid');
-      var projectName = cardLink.data('projectname');
+      var commentId = cardLink.data('comment-id');
+      var cardId = cardLink.data('card-id');
+      var columnId = cardLink.data('column-id');
       var card = {};
       console.log("commentMetaDeleteLink - JS Hook fired");
 
@@ -233,7 +226,8 @@
         url: "/comments/delete/" + commentId
       }).then( function(data){
         console.log("delete card returned: ", data);
-        populateEditCardModal(cardId, columnId, projectName, function(err) {
+        console.log("commentId: " + commentId + " cardId: " + cardId + " columnId: " + columnId);
+        populateEditCardModal(cardId, columnId, function(err) {
           if (err) {
             alert("ERROR: " + err);
             console.log("ERROR: " + err);
@@ -249,11 +243,10 @@
       var cardLink = $(e.relatedTarget);
       var cardId = cardLink.data('cardid');
       var columnId = cardLink.data('columnid');
-      var projectName = cardLink.data('projectname');
       var card = {};
       console.log("editCardModal - JS Hook fired");
 
-      populateEditCardModal(cardId, columnId, projectName, function(err) {
+      populateEditCardModal(cardId, columnId, function(err) {
         if (err) {
           alert("ERROR: " + err);
           console.log("ERROR: " + err);
