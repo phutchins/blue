@@ -74,8 +74,37 @@
     </div>
   </div>
 
+  <div class="bb-alert alert alert-info" style="display:none;">
+    <span>The examples populate this alert with dummy content</span>
+  </div>
+
   <script>
     $(function(){
+      var Notify = (function() {
+        "use strict";
+
+        var elem,
+          hideHandler,
+          that = {};
+
+        that.init = function(options) {
+          console.log("Notify has been init'd");
+          elem = $(options.selector);
+        };
+
+        that.show = function(text) {
+          console.log("Notify.show has been called");
+          clearTimeout(hideHandler);
+
+          elem.find("span").html(text);
+          elem.delay(200).fadeIn().delay(4000).fadeOut();
+        };
+
+        return that;
+      }());
+      Notify.init({
+        "selector": ".bb-alert"
+      });
 
       // Delete Project
       $('.project-delete-link').click(function(){
@@ -85,20 +114,32 @@
 
         bootbox.confirm("Are you sure?", function(result) {
           if (result) {
+            console.log("Result confirmed, deleting project " + projectId);
             $.ajax({
               type: "DELETE",
               url: "/projects/" + projectId,
-              success: function(msg) {
-                window.location.reload();
-                window.location.replace("projects");
-                Example.show("Project deleted.");
-              },
-              error: function(msg) {
-                Example.show("Error: " + msg);
+              complete: function(res, status) {
+                console.log("res.statusCode().status: ", res.statusCode().status);
+                if (res.statusCode().status == 204) {
+                  // Should change the content here instead of a reload
+                  window.location.reload();
+                  // This doesn't work due to the page reload
+                  Notify.show("Project deleted.");
+                } else {
+                  Notify.show("Error deleting project");
+                }
               }
+              //success: function(msg) {
+                //window.location.reload();
+              //  window.location.replace("projects");
+              //  console.log("Trying to show Notify");
+              //},
+              //error: function(msg) {
+              //  Notify.show("Error: ", msg);
+              //}
             });
           } else {
-            Example.show("nevermind...");
+            Notify.show("nevermind...");
           };
         });
       });

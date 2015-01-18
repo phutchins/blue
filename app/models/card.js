@@ -6,6 +6,7 @@ var cardSchema = new Schema({
   membership: {
     //_column: { type: String },
     _column: { type: mongoose.SchemaTypes.ObjectId,ref: "Column" },
+    _comments: [ { type: mongoose.SchemaTypes.ObjectId,ref: "Comment" } ],
     position: { type: Number },
     // make this _owner and reference
     owner: { type: String },
@@ -15,12 +16,6 @@ var cardSchema = new Schema({
     priority: { type: Number },
     estimate: { type: Number }
   },
-  comments: [comment]
-});
-
-var comment = new Schema({
-  user: { type: String },
-  content: { type: String }
 });
 
 module.exports = mongoose.model('Card', cardSchema);
