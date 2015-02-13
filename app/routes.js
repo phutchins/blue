@@ -18,7 +18,7 @@ module.exports = function(app, passport) {
 
   // Default Page - Redirects to login options if not authenticated
   app.get('/', isLoggedIn, function(req, res) {
-      res.redirect('/projects');
+    res.redirect('/projects');
   });
 
   // Authentication options page

@@ -35,6 +35,7 @@
       dropOnEmpty: true
     });
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
+      console.log("SortUpsate Triggered");
       if (this === ui.item.parent()[0]) {
         /*
           This event is triggered when the user stopped sorting and the DOM position has changed.
@@ -51,10 +52,15 @@
         //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
         console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
 
+        var order = $('sortable').each(function(i, obj) {
+          console.log("sortable each - i:", i, " obj:", obj);
+        });
+
         var order = $('ul.sortable li').map(function(){
           console.log($(this).data("id"));
           return $(this).data("id");
         }).get();
+        console.log("Order 1: ", order);
 
         // Should be a patch instead of post
         $.ajax({
@@ -79,7 +85,7 @@
     // make all items having class 'edit' editable
     $('.edit').editable();
 
-    // make username1 editable
+    // make board-column-name editable
     $('#board-column-name').editable({
       type: 'text',
       pk: 1,
