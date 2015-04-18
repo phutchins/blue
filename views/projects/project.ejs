@@ -12,13 +12,13 @@
 <% include ../header %>
   <% include ./boards/index %>
 
-  <script src="/js/jquery.sortable.js"></script>
   <script>
 
     //console.log("board-column > ul: ", $('.board-column > ul'));
     $(function() {
       if (typeof($('.board-column > ul')) !== 'undefined') {
         //console.log("board-column > ul: ", $('.board-column > ul'));
+        console.log('in sort function');
         $('.board-column > ul').sortable({
           connectWith: '.connected',
           dropOnEmpty: true,
@@ -34,8 +34,19 @@
       forcePlaceholderSize: true,
       dropOnEmpty: true
     });
+    $(function() {
+      $('#54b6dfbc0cb9219aef169b2b').sortable({
+        connectWith: ".connected",
+        update : function () {
+          var order2 = $('#54b6dfbc0cb9219aef169b2b').sortable('toArray').toString();
+          console.log("Order 2:"+order2);
+        }
+      }).disableSelection();
+    });
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
       console.log("SortUpsate Triggered");
+      var order3 = $('#54b6dfbc0cb9219aef169b2b').sortable('toArray').toString();
+      console.log("Order 3:"+order3);
       if (this === ui.item.parent()[0]) {
         /*
           This event is triggered when the user stopped sorting and the DOM position has changed.
