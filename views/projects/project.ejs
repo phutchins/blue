@@ -35,18 +35,28 @@
       dropOnEmpty: true
     });
     $(function() {
-      $('#54b6dfbc0cb9219aef169b2b').sortable({
+      var count = 0;
+      $('.board-column > ul').each(function(i, obj) {
+        obj.sortable({
+          connectWith: ".connected",
+          update: function () {
+            var order = $('.board-column > ul').sortable('toArray').toString();
+            console.log("Order:"+order);
+          }
+        }).disableSelection();
+        count = count + 1;
+        console.log("sortable each "+count+": "+obj);
+      });
+      $('.board-column > ul').sortable({
         connectWith: ".connected",
         update : function () {
-          var order2 = $('#54b6dfbc0cb9219aef169b2b').sortable('toArray').toString();
-          console.log("Order 2:"+order2);
+          var order = $('.board-column > ul').sortable('toArray').toString();
+          console.log("Order:"+order);
         }
       }).disableSelection();
     });
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
       console.log("SortUpsate Triggered");
-      var order3 = $('#54b6dfbc0cb9219aef169b2b').sortable('toArray').toString();
-      console.log("Order 3:"+order3);
       if (this === ui.item.parent()[0]) {
         /*
           This event is triggered when the user stopped sorting and the DOM position has changed.
@@ -63,15 +73,15 @@
         //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
         console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
 
-        var order = $('sortable').each(function(i, obj) {
-          console.log("sortable each - i:", i, " obj:", obj);
-        });
+        //var order = $('sortable').each(function(i, obj) {
+        //  console.log("sortable each - i:", i, " obj:", obj);
+        //});
 
-        var order = $('ul.sortable li').map(function(){
-          console.log($(this).data("id"));
-          return $(this).data("id");
-        }).get();
-        console.log("Order 1: ", order);
+        //var order = $('ul.sortable li').map(function(){
+        //  console.log($(this).data("id"));
+        //  return $(this).data("id");
+        //}).get();
+        //console.log("Order 1: ", order);
 
         // Should be a patch instead of post
         $.ajax({
