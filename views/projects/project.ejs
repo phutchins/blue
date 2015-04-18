@@ -93,7 +93,7 @@
       // persist the old value in the element to be restored when clicking reset
       var oldItemValue = $(that)[0].innerHTML;
       if (!$(that).attr('oldValue')) {
-        console.log('persisting original value: ' + oldItemValue)
+        console.log('persisting original value: ' + oldItemValue);
         $(that).attr('oldValue', oldItemValue);
       }
       setTimeout(function() {
@@ -109,7 +109,7 @@
     });
 
     $('#tabList a').click(function (e) {
-      e.preventDefault()
+      e.preventDefault();
       $(this).tab('show')
     });
 
