@@ -276,46 +276,61 @@ module.exports = function(app, passport) {
     });
   });
 
+  // Update column card order
+  app.post('/column/order', isLoggedIn, function(req, res) {
+
+  });
 
   // Move a card to a different column
   app.post('/card/move', isLoggedIn, function(req, res) {
     var newColumnId = req.body.newColumnId;
     var cardId = req.body.cardId;
+    var cardOrder = req.body.cardOrder;
     console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumnId: " + req.body.newColumnId);
-    Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, card) {
-      var oldColumn = card.membership._column;
-      console.log("oldColumn._id: "+oldColumn._id+" newColumnId: "+newColumnId);
-      if (oldColumn._id == newColumnId) {
-        console.log("Card moved within column");
+    // We can accept either cardId and newColumnId or cardOrder and columnId
+    // This should be broken out into two functions, updateColumnOrder and updateCardMembership
+    Card.findOne( { _id: cardId }).populate('membership._column').exec( function (err, card) {
+      // If no card is found send a 404 back and stop processing the request
+      if (card == null) {
+        console.log("No card found with id: "+cardId);
+        res.status(404, "Failure").end();
       } else {
-        console.log("(POST) /card/move [INFO] - oldColumn name: " + oldColumn.name);
-        console.log("Move Card (POST): Found card '", card.name, "' with id '",card._id,"'");
-        if (err) {
-          console.log(err);
+        // We found a card so lets update it with the new changes
+        var oldColumn = card.membership._column;
+        console.log("oldColumn._id: "+oldColumn._id+" newColumnId: "+newColumnId);
+        if (oldColumn._id == newColumnId) {
+          console.log("Card moved within column");
         } else {
-          // change this to findOne and then save manually to avoid no erroring
-          Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: mongoose.Types.ObjectId(card._id) } }, { safe: true, upsert: false }, function(err, column) {
-            console.log("Move Card (POST): Column cards is now - ", column._cards);
-            console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
-            if (err) {
-              console.log(err);
-            } else {
-              Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: card._id }}, function(err, oldColumn) {
-                console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", oldColumn.name, "'");
-                //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
-                card.membership._column = req.body.newColumnId;
-                card.save(function (err) {
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    console.log("Move Card (POST): Saved updates to new column");
-                  };
+          console.log("(POST) /card/move [INFO] - oldColumn name: " + oldColumn.name);
+          console.log("Move Card (POST): Found card '", card.name, "' with id '",card._id,"'");
+          if (err) {
+            console.log(err);
+          } else {
+            // change this to findOne and then save manually to avoid no erroring
+            Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: mongoose.Types.ObjectId(card._id) } }, { safe: true, upsert: false }, function(err, column) {
+              console.log("Move Card (POST): Column cards is now - ", column._cards);
+              console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
+              if (err) {
+                console.log(err);
+              } else {
+                Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: card._id }}, function(err, oldColumn) {
+                  console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", oldColumn.name, "'");
+                  //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
+                  card.membership._column = req.body.newColumnId;
+                  card.save(function (err) {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log("Move Card (POST): Saved updates to new column");
+                    };
+                  });
                 });
-              });
-              if (err) { console.log(err) }
-              console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
-            };
-          });
+                if (err) { console.log(err) }
+                console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
+                res.status(200, "Success").end();
+              };
+            });
+          };
         };
       };
     });
