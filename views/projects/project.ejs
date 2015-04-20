@@ -38,16 +38,14 @@
           update: function () {
             var columnId = $('.board-column > ul')[idx].id;
             var cardOrder = $(this).sortable('toArray').toString();
-            var newColumnId = $('.board-column > ul')[idx].parentNode.id;
+            //var newColumnId = $('.board-column > ul')[idx].parentNode.id;
             console.log("Card order ("+columnId+"): "+cardOrder);
             $.ajax({
               type: "POST",
-              url: "/card/move",
+              url: "/column/order",
               dataType: "json",
               data: {
-                cardId: columnId,
-                newColumnId: newColumnId,
-                boardName: $('li[role="tab"].ui-tabs-active a').text(),
+                columnId: columnId,
                 cardOrder: cardOrder
               }
             }).then(function(order){
@@ -62,8 +60,6 @@
     $('.sortable').sortable().bind('sortupdate', function(err, ui) {
       console.log("SortUpsate Triggered");
       // Why do we need this if statement?
-      console.log("this: "+this);
-      console.log("$(this): "+$(this));
       if (this === ui.item.parent()[0]) {
         /*
           This event is triggered when the user stopped sorting and the DOM position has changed.
@@ -73,12 +69,24 @@
           ui.startparent contains the element that the dragged item comes from
           ui.endparent contains the element that the dragged item was added to
         */
-    //    console.log("UI: ", ui);
-    //    console.log("parent node id (target column):" + ui.item[0].parentNode.id); // Where the card is moving to
-    //    console.log("item id:" + ui.item[0].id);
-    //    console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
-    //    //console.log("board name: ", $(this).closest('.row').find('.inputQty'));
-    //    console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
+        //    console.log("UI: ", ui);
+        //    console.log("parent node id (target column):" + ui.item[0].parentNode.id); // Where the card is moving to
+        //    console.log("item id:" + ui.item[0].id);
+        //    console.log("project: " + ui.item[0].childNodes[0].ownerDocument.title);
+        //    console.log("board name: ", $(this).closest('.row').find('.inputQty'));
+        //    console.log("board name: ", $('li[role="tab"].ui-tabs-active a').text());
+        $.ajax({
+          type: "POST",
+          url: "/card/move",
+          dataType: "json",
+          data: {
+            cardId: ui.item[0].id,
+            newColumnId: ui.item[0].parentNode.id,
+            boardName: $('li[role="tab"].ui-tabs-active a').text()
+          }
+        }).then(function(order){
+          console.log("Order: ", order);
+        });
       };
     });
 
