@@ -304,14 +304,16 @@ module.exports = function(app, passport) {
         var cardCount = (cardOrderArray.length - 1);
         var count = 0;
         // This might should check for null also
-        if (cardOrderArray.length >= 1) {
-          console.log("cardOrderArray: "+cardOrderArray);
+        if (typeof cardOrderArray[0] !== 'undefined' && cardOrderArray[0] !== null && cardOrderArray[0] != '') {
+          console.log("cardOrderArray.length: "+cardOrderArray.length);
           cardOrderArray.forEach( function(cardId) {
             console.log("Sort order processing card: "+cardId);
             cardOrderObjects[count] = mongoose.Types.ObjectId(cardId);
             count = count + 1;
           });
-        }
+        } else {
+          console.log("Column is empty");
+        };
         column._cards = cardOrderArray;
         column.save( function(err) {
           console.log("Column _cards after update: "+column._cards);
