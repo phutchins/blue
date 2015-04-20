@@ -18,7 +18,7 @@ module.exports = function(app, passport) {
 
   // Default Page - Redirects to login options if not authenticated
   app.get('/', isLoggedIn, function(req, res) {
-      res.redirect('/projects');
+    res.redirect('/projects');
   });
 
   // Authentication options page
@@ -72,6 +72,7 @@ module.exports = function(app, passport) {
   // Projects View
   app.get('/projects', isLoggedIn, function(req, res) {
     Project.find().populate('_owner').exec( function(err, projects) {
+      console.log("(GET) - /projects - Rendering index.ejs");
       res.render('projects/index.ejs', {
         user : req.user,
         projects : projects
@@ -95,21 +96,22 @@ module.exports = function(app, passport) {
           });
         } else {
           defaultBoardId = project.membership._defaultBoard._id;
-          console.log("defaultBoardId is '" + defaultBoardId + "'");
+          //console.log("defaultBoardId is '" + defaultBoardId + "'");
         };
 
-        console.log("Project (GET): boards - ",project.membership._boards);
+        //console.log("Project (GET): boards - ",project.membership._boards);
 
         // Maybe do (project.membership._boards, { path: '_columns._cards'}...
         Column.populate(project, { path: 'membership._boards._columns' }, function(err, projectPopulatedColumns) {
           Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
             if (err) { return console.log(err); }
 
-            console.log("projectPopulatedCards: ", projectPopulatedCards);
+            //console.log("projectPopulatedCards: ", projectPopulatedCards);
             var boards = projectPopulatedCards.membership._boards.toObject();
             boards.sort(function(b1, b2) { return b1._id - b2._id; });
 
             req.user.session.lastProject = projectPopulatedCards.name;
+            console.log("(GET) - /projects/:projectName - Rendering project.ejs");
             res.render('projects/project.ejs', {
               user : req.user,
               boards : projectPopulatedCards.membership._boards,
@@ -119,6 +121,7 @@ module.exports = function(app, passport) {
           });
         });
       } else {
+        console.log("(GET) - /orjects/:projectName - Rendering project.ejs without boards");
         res.render('projects/project.ejs', {
           user : req.user,
           project: project
@@ -268,7 +271,7 @@ module.exports = function(app, passport) {
         if (err) res.writeHead(500, err.message)
         else if (card == null) res.writeHead(404);
         else {
-          console.log("/cards/" + req.param('cardId') + " - Found card '" + cardPopulated.name + "'");
+          console.log("(GET) /cards/" + req.param('cardId') + " - Found card '" + cardPopulated.name + "'");
           console.log("(GET) /cards/ - Returning card json - ", cardPopulated);
           res.json({ data: JSON.stringify(cardPopulated) });
         }
@@ -276,42 +279,99 @@ module.exports = function(app, passport) {
     });
   });
 
+  // Update column card order
+  app.post('/column/order', isLoggedIn, function(req, res) {
+    var columnId = req.body.columnId;
+    var cardOrder = req.body.cardOrder;
+    console.log("Updating column ID '"+columnId+"' with order: '"+cardOrder+"'");
+    //if (cardOrder[0] == null) {
+    //  console.log("Sort order request submitted empty request");
+    //  res.status(404, "empty request").end();
+    //} else {
+    Column.findOne({ _id: columnId }).populate("_cards").exec( function(err, column) {
+      if (err) {
+        console.log("Error finding column with id: "+columnId+" err: "+err);
+        res.status(500, "error").end();
+      };
+      if (column == null) {
+        console.log("No column found with id: "+columnId);
+        res.status(404, "failure").end();
+      } else {
+        console.log("Found colum '"+column.name);
+        //console.log("Column _cards before update: "+column._cards);
+        var cardOrderArray = cardOrder.split(',');
+        var cardOrderObjects = [];
+        var cardCount = (cardOrderArray.length - 1);
+        var count = 0;
+        // This might should check for null also
+        if (typeof cardOrderArray[0] !== 'undefined' && cardOrderArray[0] !== null && cardOrderArray[0] != '') {
+          console.log("cardOrderArray.length: "+cardOrderArray.length);
+          cardOrderArray.forEach( function(cardId) {
+            console.log("Sort order processing card: "+cardId);
+            cardOrderObjects[count] = mongoose.Types.ObjectId(cardId);
+            count = count + 1;
+          });
+        } else {
+          console.log("Column is empty");
+        };
+        column._cards = cardOrderArray;
+        column.save( function(err) {
+          console.log("Column _cards after update: "+column._cards);
+          res.status(200, "success").end();
+        });
+      };
+    });
+  });
 
   // Move a card to a different column
   app.post('/card/move', isLoggedIn, function(req, res) {
     var newColumnId = req.body.newColumnId;
     var cardId = req.body.cardId;
     console.log("Move Card (POST): cardId: " + req.body.cardId + " newColumnId: " + req.body.newColumnId);
-    Card.findOne( { _id: req.body.cardId }).populate('membership._column').exec( function (err, card) {
-      var oldColumn = card.membership._column;
-      console.log("(POST) /card/move [INFO] - oldColumn name: " + oldColumn.name);
-      console.log("Move Card (POST): Found card '", card.name, "' with id '",card._id,"'");
-      if (err) {
-        console.log(err);
+    Card.findOne( { _id: cardId }).populate('membership._column').exec( function (err, card) {
+      // If no card is found send a 404 back and stop processing the request
+      if (card == null) {
+        console.log("No card found with id: "+cardId);
+        res.status(404, "Failure").end();
       } else {
-        // change this to findOne and then save manually to avoid no erroring
-        Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: mongoose.Types.ObjectId(card._id) } }, { safe: true, upsert: false }, function(err, column) {
-          console.log("Move Card (POST): Column cards is now - ", column._cards);
-          console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
+        // We found a card so lets update it with the new changes
+        var oldColumn = card.membership._column;
+        console.log("oldColumn._id: "+oldColumn._id+" newColumnId: "+newColumnId);
+        if (oldColumn._id == newColumnId) {
+          console.log("Card moved within column");
+          res.status(200, "success").end();
+        } else {
+          console.log("(POST) /card/move [INFO] - oldColumn name: " + oldColumn.name);
+          console.log("Move Card (POST): Found card '", card.name, "' with id '",card._id,"'");
           if (err) {
             console.log(err);
           } else {
-            Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: card._id }}, function(err, oldColumn) {
-              console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", oldColumn.name, "'");
-              //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
-              card.membership._column = req.body.newColumnId;
-              card.save(function (err) {
-                if (err) {
-                  console.log(err);
-                } else {
-                  console.log("Move Card (POST): Saved updates to new column");
-                };
-              });
+            // change this to findOne and then save manually to avoid no erroring
+            Column.findOneAndUpdate( { _id: newColumnId }, { $push: { _cards: mongoose.Types.ObjectId(card._id) } }, { safe: true, upsert: false }, function(err, column) {
+              console.log("Move Card (POST): Column cards is now - ", column._cards);
+              console.log("Move Card (POST): Found and added card '",card.name,"' to column '",column.name,"'");
+              if (err) {
+                console.log(err);
+              } else {
+                Column.findOneAndUpdate( { _id: oldColumn }, { $pull: { _cards: card._id }}, function(err, oldColumn) {
+                  console.log("Move Card (POST): Found and removed card '", card.name, "' from column '", oldColumn.name, "'");
+                  //Card.findOne, {$set: { 'membership._column': req.body.newColumnId } }, {new: true, upsert: false}).populate('membership._column').exec(function(err, card) {
+                  card.membership._column = req.body.newColumnId;
+                  card.save(function (err) {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log("Move Card (POST): Saved updates to new column");
+                    };
+                  });
+                });
+                if (err) { console.log(err) }
+                console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
+                res.status(200, "Success").end();
+              };
             });
-            if (err) { console.log(err) }
-            console.log("Move Card (POST): Moved card with id '" + cardId + "' to column '" + req.body.newColumnId + "'");
           };
-        });
+        };
       };
     });
   });
