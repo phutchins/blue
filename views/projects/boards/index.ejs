@@ -1,3 +1,4 @@
+<script type = "text/javascript" src="/js/bootbox.min.js"></script>
 <div id="tabs" role="tabpanel" class="board tabbable tabs-below">
     <ul id="tabList" class="nav nav-tabs" role="tablist">
       <% if ( typeof(boards) != 'undefined' ) { %>
@@ -55,7 +56,7 @@
         <h4 class="modal-title" id="editCardLabel">Edit Card</h4>
       </div>
       <div class="modal-body">
-        <form action="/cards/update" method="post">
+        <form action="/cards/update" method="post" id="form-card-update">
           <input type="hidden" name="columnId" class="editcard-column-id-input">
           <input type="hidden" name="projectName" class="editcard-project-name-input">
           <input type="hidden" name="cardId" class="editcard-card-id-input">
@@ -83,6 +84,18 @@
           </div>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-warning btn-lg add-comment-button">Add</button>
+            <div class="btn-group modal-options-dropdown">
+              <button type="button" class="btn btn-primary btn-xs">More</button>
+              <button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-toggle-modal" data-toggle="dropdown" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Options</span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Share</a></li>
+                <li class="divider"></li>
+                <li><a class="card-delete-link">Delete</a></li>
+              </ul>
+            </div>
         </form>
       </div>
     </div>
@@ -138,3 +151,62 @@
     </div>
   </div>
 </div>
+
+<script>
+$(function(){
+   var Notify = (function() {
+      "use strict";
+
+      var elem,
+        hideHandler,
+        that = {};
+
+      that.init = function(options) {
+        console.log("Notify has been init'd");
+        elem = $(options.selector);
+      };
+
+      that.show = function(text) {
+        console.log("Notify.show has been called");
+        clearTimeout(hideHandler);
+
+        elem.find("span").html(text);
+        elem.delay(200).fadeIn().delay(4000).fadeOut();
+      };
+
+      return that;
+    }());
+    Notify.init({
+      "selector": ".bb-alert"
+    });
+    $('.card-delete-link').click(function(){
+      var cardId = $('#form-card-update > .editcard-card-id-input').val();
+      var columnId = $('#form-card-update > .editcard-column-id-input').val();
+      console.log("Deleting card with id '" + cardId + "'");
+      bootbox.confirm("Are you sure?", function(result) {
+        if (result) {
+          console.log("Result confirmed, deleting card " + cardId);
+          $.ajax({
+            type: "DELETE",
+            url: "/cards/" + cardId,
+            data: { columnId: columnId },
+            complete: function(res, status) {
+              console.log("res.statusCode().status: ", res.statusCode().status);
+              if (res.statusCode().status == 200) {
+                // Should change the content here instead of a reload
+                window.location.reload();
+                // This doesn't work due to the page reload
+                Notify.show("Card deleted.");
+                $('')
+              } else {
+                Notify.show("Error deleting card");
+              }
+            }
+          });
+        } else {
+          Notify.show("nevermind...");
+        };
+      });
+    });
+  });
+</script>
