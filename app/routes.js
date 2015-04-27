@@ -84,19 +84,32 @@ module.exports = function(app, passport) {
   app.get('/projects/:projectName', isLoggedIn, function(req, res) {
     var projectName = req.param("projectName");
     var defaultBoardId = "";
+    var url = require('url');
+    var urlParts = url.parse(req.url, true);
+    var query = urlParts.query;
     console.log("(GET) /projects/:projectName - Loading project " + projectName);
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
-        if (typeof project.membership._defaultBoard == "undefined") {
+        if (typeof req.param('board') !== 'undefined' && req.param('board') !== null && req.param('board') !== '') {
+          queryBoardName = req.param('board');
+          Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
+            if (board !== null) {
+              console.log("(GET) - /projects/:projectName - found board with name '"+board.name+"'");
+              selectedBoardId = board._id;
+            } else {
+              selectedBoardId = project.membership._defaultBoard._id;
+            };
+          });
+        } else if (typeof project.membership._defaultBoard == "undefined") {
           project.membership._defaultBoard = project.membership._boards[0];
-          defaultBoardId = project.membership._boards[0]._id;
+          selectedBoardId = project.membership._boards[0]._id;
           project.save( function(err) {
             if (err) {
               console.log(err);
             }
           });
         } else {
-          defaultBoardId = project.membership._defaultBoard._id;
+          selectedBoardId = project.membership._defaultBoard._id;
           //console.log("defaultBoardId is '" + defaultBoardId + "'");
         };
 
