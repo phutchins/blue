@@ -82,7 +82,9 @@ module.exports = function(app, passport) {
   });
 
   app.get('/projects/:projectName', isLoggedIn, function(req, res) {
-    var projectName = req.param("projectName");
+    var projectName = req.param('projectName').split('?')[0]
+    var queryString = req.param('projectName').split('?')[1]
+    //var projectName = req.param("projectName");
     var defaultBoardId = "";
     var url = require('url');
     var urlParts = url.parse(req.url, true);

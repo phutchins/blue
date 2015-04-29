@@ -153,6 +153,12 @@
 </div>
 
 <script>
+function updateQueryString(newString) {
+  if (history.pushState) {
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + newString;
+    window.history.pushState({path:newurl},'',newurl);
+  }
+}
 $(function(){
    var Notify = (function() {
       "use strict";
