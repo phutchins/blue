@@ -2,6 +2,7 @@
 // Todo -
 // Look into route separation: https://github.com/strongloop/express/blob/master/examples/route-separation/index.js
 require('../config/database');
+var URL = require('url');
 var Project = require('./models/project');
 var Board = require('./models/board');
 var Card = require('./models/card');
@@ -81,21 +82,36 @@ module.exports = function(app, passport) {
   });
 
   app.get('/projects/:projectName', isLoggedIn, function(req, res) {
-    var projectName = req.param("projectName");
+    var projectName = req.param('projectName').split('?')[0]
+    var queryString = req.param('projectName').split('?')[1]
+    //var projectName = req.param("projectName");
     var defaultBoardId = "";
+    var url = require('url');
+    var urlParts = url.parse(req.url, true);
+    var query = urlParts.query;
     console.log("(GET) /projects/:projectName - Loading project " + projectName);
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
-        if (typeof project.membership._defaultBoard == "undefined") {
+        if (typeof req.param('board') !== 'undefined' && req.param('board') !== null && req.param('board') !== '') {
+          queryBoardName = req.param('board');
+          Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
+            if (board !== null) {
+              console.log("(GET) - /projects/:projectName - found board with name '"+board.name+"'");
+              selectedBoardId = board._id;
+            } else {
+              selectedBoardId = project.membership._defaultBoard._id;
+            };
+          });
+        } else if (typeof project.membership._defaultBoard == "undefined") {
           project.membership._defaultBoard = project.membership._boards[0];
-          defaultBoardId = project.membership._boards[0]._id;
+          selectedBoardId = project.membership._boards[0]._id;
           project.save( function(err) {
             if (err) {
               console.log(err);
             }
           });
         } else {
-          defaultBoardId = project.membership._defaultBoard._id;
+          selectedBoardId = project.membership._defaultBoard._id;
           //console.log("defaultBoardId is '" + defaultBoardId + "'");
         };
 
@@ -128,6 +144,12 @@ module.exports = function(app, passport) {
         });
       };
     });
+  });
+
+  app.get('/projects/:projectName/:boardName', isLoggedIn, function(req, res) {
+    var projectName = req.param("projectName");
+    var boardName = req.param("boardName");
+    console.log("(GET) /projects/:projectName/:boardName - Loading board: " + boardName);
   });
 
   // process the project creation form
@@ -231,6 +253,7 @@ module.exports = function(app, passport) {
         { $push: { "_cards": card._id } },
         function(err, column) {
           if (err) console.log(err);
+          // should render the correct board here
         }
       )
       //res.redirect( '/projects/' + projectName );
@@ -251,17 +274,33 @@ module.exports = function(app, passport) {
   });
 
   // change this to /cards/:cardId with app.delete
-  app.delete('/cards/', isLoggedIn, function(req, res) {
-    console.log("Delete Card (GET): Deleting card with ID '" + req.query.cardId + "'");
+  app.delete('/cards/:cardId', isLoggedIn, function(req, res) {
+    var cardId = req.param("cardId");
+    var columnId = req.param("columnId");
+    //console.log("Delete Card (GET): Deleting card with ID '" + req.query.cardId + "'");
+    console.log("Delete Card (GET): Deleting card with ID '" + cardId + "'");
     // Add a message here to populate message field on board or project page with status of result
-    Column.update( { "_id": req.query.columnId }, { $pull: { _cards: req.param("columnId") } }, function(err, numAffected) {
-      if (err || numAffected == 0) {
-        console.log("Delete Card (GET): FAILLLLELELELjlfwjkleflkj");
+    Column.update( { "_id": columnId }, { $pull: { _cards: cardId } }, function(err, numAffected) {
+      if (err) {
+        console.log("(DELETE) - /cards/:cardId - Error deleting card: "+err);
+        res.send(500);
+        return;
+      } else if (numAffected == 0) {
+        console.log("(DELETE): No cards found with id " + cardId);
+        res.send(404, "Card not found");
+        return;
       }
-      Card.remove({ _id: req.param("cardId") }, function(err) {
-        console.log("Delete Card (GET): Removed card '" + req.query.cardId + "'");
-        res.redirect('/projects/' + req.query.projectName || '/');
-      });
+      console.log("(DELETE) - /cards/:cardId - Card "+cardId+" deleted!");
+      res.send(200, "Success");
+      // need to send back the changed column data here
+
+      // Change this to update the card to reflect that it is not on a column or is in trash
+      //Card.remove({ _id: cardId }, function(err) {
+      //  console.log("Delete Card (GET): Removed card '" + cardId + "'");
+        //res.redirect('/projects/' + req.query.projectName || '/');
+        //var returnPath = URL.parse(req.headers['referer']).pathname
+        //res.render(returnPath);
+      //});
     });
   });
 

@@ -128,7 +128,60 @@
       }, 200);
     });
 
+    function getParameterByName(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+      results = regex.exec(location.search);
+      return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    function setParameterByName(name, param) {
+      if (history.pushState) {
+        var queryString = window.location.search;
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        param = param.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        console.log("Orig Query String: "+queryString);
+        if ( queryString === '') {
+          console.log("Query String is EMPTY");
+          queryString = queryString + '?' + name + "=" + param;
+          console.log("Query String is now: '"+queryString+"'");
+        } else {
+          console.log("Query String EXISTS");
+          var origParam = getParameterByName(name);
+          if (origParam === "") {
+            console.log("origParam is EMPTY");
+            queryString = queryString+"?"+name+"="+param;
+          } else {
+            //replace the query string param inside of the query string
+            var regex = new RegExp("[\\?&](" + name + "=[^&#]*)");
+            var results = regex.exec(location.search);
+            console.log("results: "+results);
+            queryString = queryString.replace(name+"="+origParam, name+"="+param);
+            console.log("origParam is '"+origParam+"'");
+          }
+          //var myString = decodeURIComponent(results[1].replace(/\+/g, " "));
+          console.log("Query String is now: '"+queryString+"'");
+        }
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + queryString;
+        console.log("New URL is: "+newurl);
+        window.history.pushState({path:newurl},'',newurl);
+      }
+    }
+
+
+
     $('#tabList a').click(function (e) {
+      var param = getParameterByName('board');
+      console.log("TAB CLICKED - PARAM: "+param);
+      setParameterByName('board', $(this).html());
+      //if (history.pushState) {
+        // TODO - need to make this edit the query string and add or change board, not replace the entire query string with board
+      //  var queryString = window.location.search;
+      //  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + $(this).html();
+      //  window.history.pushState({path:newurl},'',newurl);
+      //}
       e.preventDefault();
       $(this).tab('show')
     });
@@ -279,7 +332,7 @@
 
     $('#addCardModal').on('shown.bs.modal', function(e) {
       var columnLink = $(e.relatedTarget);
-      console.log("addCardModul - ", columnLink.data('column-id'));
+      console.log("addCardModal - ", columnLink.data('column-id'));
       var columnId = columnLink.data('column-id');
       var card = {};
       $('.addcard-column-id-input').val(columnId);
