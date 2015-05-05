@@ -19,17 +19,25 @@
       if (typeof($('.board-column > ul')) !== 'undefined') {
         //console.log("board-column > ul: ", $('.board-column > ul'));
         console.log('in sort function');
-        $('.board-column > ul').sortable({
+        //$('.board-column > ul').sortable({
+        $('ul.card-container').sortable({
           connectWith: '.connected',
           dropOnEmpty: true,
         });
       };
     });
-    $('ul.sortable').sortable({
-      dropOnEmpty: true,
-      forcePlaceholderSize: true,
-    });
+    //$('ul.sortable').sortable({
+    //  dropOnEmpty: true,
+    //  forcePlaceholderSize: true,
+    //});
     // Send update for column membership and order
+    $(function() {
+      $('ul.column-container').sortable({
+        dropOnEmpty: true,
+        placeholder: 'column',
+        pullPlaceholder: true,
+      });
+    });
     $(function() {
       $('.board-column > ul').each(function(idx) {
         console.log("Sort binding to '"+idx+"'");

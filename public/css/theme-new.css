@@ -177,6 +177,10 @@ text-decoration: none;
   min-height: 1em;
   margin: 0 4px 0 0;
 }
+.column-container {
+  display: inline;
+  padding-left: 0px;
+}
 .board-column-name {
   font-weight: bold;
   font-size: 15px;
@@ -192,6 +196,10 @@ text-decoration: none;
   background: #fff;
   border-radius: 3px;
   list-style-type: none;
+}
+.column {
+  list-style-type: none;
+  display: inline;
 }
 .projects-container {
   margin: 15px;

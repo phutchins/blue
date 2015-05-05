@@ -1,25 +1,31 @@
-<section id="connected" name="<%= board.name %>">
-<% board._columns.forEach( function ( column ) { %>
-  <% console.log("column: ", column); %>
-  <div class="board-column">
-    <div class="editable-blue edit board-column-name"><%= column.name %></div>
-    <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
-      <% column._cards.forEach( function ( card ) { %>
-        <li draggable=true class="card" id="<%= card._id %>">
-          <a id="editCard" href="#editCardModal" style="card-link" data-toggle="modal" data-cardid="<%= card._id %>" data-columnid="<%= column.id %>" data-projectname="<%=project.name %>">
-            <div class="card-name">
-              <span class="lead"><%= card.name %></span>
-            </div>
-            <div class="card-content">
-            </div>
-          </a>
+<div id="board" class="board">
+  <section id="connected" name="<%= board.name %>">
+      <ul id="<%= board._id %>-column-container" class="column-container">
+    <% board._columns.forEach( function ( column ) { %>
+        <li draggable=true class="column" id="column-<%= column._id %>">
+          <% console.log("column: ", column); %>
+          <div class="board-column">
+            <div class="editable-blue edit board-column-name"><%= column.name %></div>
+            <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
+              <% column._cards.forEach( function ( card ) { %>
+                <li draggable=true class="card" id="<%= card._id %>">
+                  <a id="editCard" href="#editCardModal" style="card-link" data-toggle="modal" data-cardid="<%= card._id %>" data-columnid="<%= column.id %>" data-projectname="<%=project.name %>">
+                    <div class="card-name">
+                      <span class="lead"><%= card.name %></span>
+                    </div>
+                    <div class="card-content">
+                    </div>
+                  </a>
+                </li>
+              <% }); %>
+            </ul>
+            <a id="addCardLink" data-toggle="modal" data-target="#addCardModal" data-column-id="<%= column._id %>" class="add-card"> Add a card...</a>
+          </div>
         </li>
-      <% }); %>
-    </ul>
-    <a id="addCardLink" data-toggle="modal" data-target="#addCardModal" data-column-id="<%= column._id %>" class="add-card"> Add a card...</a>
-  </div>
-<% }); %>
+    <% }); %>
+      </ul>
   <div class="add-column-button">
     <button id="addColumnButton" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addColumnModal" data-boardid="<%= board._id %>" data-projectname="<%= project.name %>">+</button>
   </div>
-</section>
+  </section>
+</div>
