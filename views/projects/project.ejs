@@ -39,6 +39,17 @@
       });
     });
     $(function() {
+      $('ul.column-container').each(function(idx) {
+        console.log("Column sort binding to '"+idx+"'");
+        $(this).sortable({
+          update: function () {
+            var columnOrder = $(this).sortable('toArray').toString();
+            console.log("Column order: "+columnOrder);
+          }
+        });
+      })
+    });
+    $(function() {
       $('.board-column > ul').each(function(idx) {
         console.log("Sort binding to '"+idx+"'");
         $(this).sortable({
