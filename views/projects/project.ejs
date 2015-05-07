@@ -43,8 +43,21 @@
         console.log("Column sort binding to '"+idx+"'");
         $(this).sortable({
           update: function () {
+            var boardId = $('ul.column-container')[idx].id;
             var columnOrder = $(this).sortable('toArray').toString();
             console.log("Column order: "+columnOrder);
+            console.log("Board id: "+boardId);
+            $.ajax({
+              type: "POST",
+              url: "/board/column/order",
+              dataType: "json",
+              data: {
+                boardId: boardId,
+                columnOrder: columnOrder
+              }
+            }).then(function(order){
+              console.log("Column order update for "+$(this).text()+" done.");
+            });
           }
         });
       })
@@ -61,16 +74,15 @@
             console.log("Card order ("+columnId+"): "+cardOrder);
             $.ajax({
               type: "POST",
-              url: "/column/order",
+              url: "/column/card/order",
               dataType: "json",
               data: {
                 columnId: columnId,
                 cardOrder: cardOrder
               }
             }).then(function(order){
-                console.log("Column update for "+$(this).text()+" done.");
-              }
-            );
+              console.log("Column update for "+$(this).text()+" done.");
+            });
           }
         }).disableSelection();
       });

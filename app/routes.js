@@ -318,8 +318,45 @@ module.exports = function(app, passport) {
     });
   });
 
+  app.post('/board/column/order', isLoggedIn, function(req, res) {
+    var boardId = req.body.boardId;
+    var columnOrder = req.body.columnOrder;
+    console.log("Updating column order for board with id '"+boardId+"'");
+    Board.findOne({ _id: boardId }).populate("_columns").exec( function(err, board) {
+      if (err) {
+        console.log("Error finding board with id: '"+boardId+"'");
+        res.status(500, "error").end();
+      };
+      if (board == null) {
+        console.log("No board found with id: '"+boardId+"'");
+        res.status(404, "failed").end();
+      } else {
+        console.log("Found board '"+board.name+"'");
+        console.log("Board columns: "+board._columns);
+        var columnOrderArray = columnOrder.split(',');
+        var columnOrderObjects = [];
+        var cardCount = (columnOrderArray.length - 1);
+        var count = 0;
+        if (typeof columnOrderArray[0] !== 'undefined' && columnOrderArray[0] !== null && columnOrderArray[0] != '') {
+          console.log("columnOrderArray.length: "+columnOrderArray.length);
+          columnOrderArray.forEach( function(columnId) {
+            console.log("Column sort order processing column: "+columnId);
+            columnOrderObjects[count] = mongoose.Types.ObjectId(columnId);
+            count = count + 1;
+          });
+        } else {
+          console.log("No columns");
+        };
+        board._columns = columnOrderArray;
+        board.save( function(err) {
+          console.log("Board saved after column order update: "+board._columns);
+          res.status(200, "success").end();
+        });
+      }
+    });
+  });
   // Update column card order
-  app.post('/column/order', isLoggedIn, function(req, res) {
+  app.post('/column/card/order', isLoggedIn, function(req, res) {
     var columnId = req.body.columnId;
     var cardOrder = req.body.cardOrder;
     console.log("Updating column ID '"+columnId+"' with order: '"+cardOrder+"'");
