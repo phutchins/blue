@@ -91,7 +91,10 @@ module.exports = function(app, passport) {
     var query = urlParts.query;
     console.log("(GET) /projects/:projectName - Loading project " + projectName);
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
-      if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
+      if (project == null) {
+        // Instead of sending 404, create a fun error page!
+        res.send(404, "not found").end();
+      } else if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
         if (typeof req.param('board') !== 'undefined' && req.param('board') !== null && req.param('board') !== '') {
           queryBoardName = req.param('board');
           Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
@@ -493,6 +496,10 @@ module.exports = function(app, passport) {
         res.status(404).end();
       };
     });
+  });
+
+  process.on('uncaughtException', function(err) {
+      console.log('Caught exception: ' + err);
   });
 
   // route middleware to make sure a user is logged in
