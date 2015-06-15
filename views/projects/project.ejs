@@ -235,6 +235,7 @@
       var button = $(e.relatedTarget);
       var projectName = button.data('project-name');
       console.log("button.data: ", button.data('project-name'));
+      document.getElementsByName("board-name")[0].focus();
       $('.project-name-input').val(projectName);
     });
 
