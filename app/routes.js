@@ -91,14 +91,21 @@ module.exports = function(app, passport) {
     var query = urlParts.query;
     console.log("(GET) /projects/:projectName - Loading project " + projectName);
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
+      if (project == null) {
+        // Instead of sending 404, create a fun error page!
+        return res.send(404, "not found").end();
+      }
+
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
         if (typeof req.param('board') !== 'undefined' && req.param('board') !== null && req.param('board') !== '') {
           queryBoardName = req.param('board');
           Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
             if (board !== null) {
               console.log("(GET) - /projects/:projectName - found board with name '"+board.name+"'");
+              console.log("(GET) - /projects/:projectName - the board is ",board);
               selectedBoardId = board._id;
             } else {
+              console.log("(GET) - /projects/:projectName - selected board null, loading default board of ", project.membership._defaultBoard._id);
               selectedBoardId = project.membership._defaultBoard._id;
             };
           });
@@ -128,11 +135,13 @@ module.exports = function(app, passport) {
 
             req.user.session.lastProject = projectPopulatedCards.name;
             console.log("(GET) - /projects/:projectName - Rendering project.ejs");
+            console.log("(GET) - /projects/:projectName - selectedBoardId is ", selectedBoardId);
             res.render('projects/project.ejs', {
               user : req.user,
               boards : projectPopulatedCards.membership._boards,
               project : projectPopulatedCards,
-              defaultBoardId : defaultBoardId
+              defaultBoardId : defaultBoardId,
+              selectedBoardId : selectedBoardId
             });
           });
         });
