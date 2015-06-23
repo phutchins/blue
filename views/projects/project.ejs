@@ -363,12 +363,13 @@
     });
 
     $('#addCardModal').on('shown.bs.modal', function(e) {
+      document.getElementById('cardNameInput').focus();
       var columnLink = $(e.relatedTarget);
       console.log("addCardModal - ", columnLink.data('column-id'));
       var columnId = columnLink.data('column-id');
       var card = {};
       $('.addcard-column-id-input').val(columnId);
-      $('#name').focus();
+      //$('#name').focus();
     });
 
   </script>
