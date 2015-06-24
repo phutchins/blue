@@ -89,19 +89,28 @@ module.exports = function(app, passport) {
     var url = require('url');
     var urlParts = url.parse(req.url, true);
     var query = urlParts.query;
+    var selectedBoardId = '';
+    var selectedBoard = null;
     console.log("(GET) /projects/:projectName - Loading project " + projectName);
     Project.findOne({ name: projectName }).populate('membership._defaultBoard').populate('membership._boards').exec( function(err, project) {
+      if (project == null) {
+        // Instead of sending 404, create a fun error page!
+        return res.send(404, "not found").end();
+      }
+
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
         if (typeof req.param('board') !== 'undefined' && req.param('board') !== null && req.param('board') !== '') {
           queryBoardName = req.param('board');
-          Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
-            if (board !== null) {
-              console.log("(GET) - /projects/:projectName - found board with name '"+board.name+"'");
-              selectedBoardId = board._id;
-            } else {
-              selectedBoardId = project.membership._defaultBoard._id;
-            };
+          selectedBoard = project.membership._boards.filter(function(doc) {
+            return doc.name == queryBoardName;
           });
+          if (selectedBoard[0]) {
+            console.log("(GET) - /projects/:projectName - found board with name '"+selectedBoard[0].name+"'");
+            selectedBoardId = selectedBoard[0]._id;
+          } else {
+            console.log("(GET) - /projects/:projectName - selected board null, loading default board of ", project.membership._defaultBoard._id);
+            selectedBoardId = project.membership._defaultBoard._id;
+          };
         } else if (typeof project.membership._defaultBoard == "undefined") {
           project.membership._defaultBoard = project.membership._boards[0];
           selectedBoardId = project.membership._boards[0]._id;
@@ -115,8 +124,6 @@ module.exports = function(app, passport) {
           //console.log("defaultBoardId is '" + defaultBoardId + "'");
         };
 
-        //console.log("Project (GET): boards - ",project.membership._boards);
-
         // Maybe do (project.membership._boards, { path: '_columns._cards'}...
         Column.populate(project, { path: 'membership._boards._columns' }, function(err, projectPopulatedColumns) {
           Card.populate(projectPopulatedColumns, { path: 'membership._boards._columns._cards' }, function(err, projectPopulatedCards) {
@@ -128,11 +135,16 @@ module.exports = function(app, passport) {
 
             req.user.session.lastProject = projectPopulatedCards.name;
             console.log("(GET) - /projects/:projectName - Rendering project.ejs");
+            projectPopulatedCards.membership._boards.forEach(function(board) {
+              console.log("(GET) - /projects/:projectName - boards are ",board.name," id: ",board._id.toString());
+            })
+            console.log("(GET) - /projects/:projectName - selectedBoardId is ", selectedBoardId);
             res.render('projects/project.ejs', {
               user : req.user,
               boards : projectPopulatedCards.membership._boards,
               project : projectPopulatedCards,
-              defaultBoardId : defaultBoardId
+              defaultBoardId : defaultBoardId,
+              selectedBoardId : selectedBoardId
             });
           });
         });

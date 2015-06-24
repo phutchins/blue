@@ -3,7 +3,6 @@
       <ul id="<%= board._id %>" class="column-container">
     <% board._columns.forEach( function ( column ) { %>
         <li draggable=true class="column" id="<%= column._id %>">
-          <% console.log("column: ", column); %>
           <div class="board-column">
             <div class="editable-blue edit board-column-name"><%= column.name %></div>
             <ul id="<%= column._id %>" class="card-container connected sortable dropzone <%= board._id %>">
