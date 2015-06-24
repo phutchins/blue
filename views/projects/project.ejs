@@ -219,6 +219,7 @@
 
     $('#addColumnModal').on('shown.bs.modal', function (e) {
       //var button = $('#addColumnButton');
+      document.getElementsByName("columnName")[0].focus();
       var button = $(e.relatedTarget);
       console.log("e: ", e);
       //var boardId = button.data('boardid');
@@ -232,6 +233,7 @@
     });
 
     $('#addBoardModal').on('shown.bs.modal', function (e) {
+      document.getElementsByName("board-name")[0].focus();
       var button = $(e.relatedTarget);
       var projectName = button.data('project-name');
       console.log("button.data: ", button.data('project-name'));
@@ -358,16 +360,16 @@
           console.log("edit card modal populated...");
         }
       });
-
     });
 
     $('#addCardModal').on('shown.bs.modal', function(e) {
+      document.getElementById('cardNameInput').focus();
       var columnLink = $(e.relatedTarget);
       console.log("addCardModal - ", columnLink.data('column-id'));
       var columnId = columnLink.data('column-id');
       var card = {};
       $('.addcard-column-id-input').val(columnId);
-      $('#name').focus();
+      //$('#name').focus();
     });
 
   </script>

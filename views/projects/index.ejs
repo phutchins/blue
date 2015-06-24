@@ -58,7 +58,7 @@
             <input type="hidden" class="project-name-input" name="project-name">
             <div class="form-group">
               <label>Name</label>
-              <input type="text" class="name-input form-control" name="name">
+              <input type="text" class="name-input form-control" name="name" id="projectNameInput">
             </div>
             <div class="form-group">
               <label>Description</label>
@@ -104,6 +104,10 @@
       }());
       Notify.init({
         "selector": ".bb-alert"
+      });
+
+      $('#addProjectModal').on('shown.bs.modal', function (e) {
+        document.getElementById('projectNameInput').focus();
       });
 
       // Delete Project
