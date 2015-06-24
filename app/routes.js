@@ -99,8 +99,16 @@ module.exports = function(app, passport) {
       if (typeof project.membership != 'undefined' && typeof project.membership._boards[0] != 'undefined') {
         if (typeof req.param('board') !== 'undefined' && req.param('board') !== null && req.param('board') !== '') {
           queryBoardName = req.param('board');
-          Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
-            if (board !== null) {
+          // TODO: BUG! Add search for project here so that we don't get just any board
+          // Boards should be unique per project!
+          Project.membership._boards.findOne({name: queryBoardName}, function(err, board) {
+            if (err) {
+              return console.log("(GET) - /projects:projectname - Error finding board: ", err);
+            }
+            console.log("NEW FIND - Found board '",board.name," with id ",board._id);
+          //})
+          //Board.findOne({name: new RegExp('^'+queryBoardName+'$', "i")}, function(err, board) {
+            if (!board) {
               console.log("(GET) - /projects/:projectName - found board with name '"+board.name+"'");
               console.log("(GET) - /projects/:projectName - the board is ",board);
               selectedBoardId = board._id;
@@ -135,6 +143,9 @@ module.exports = function(app, passport) {
 
             req.user.session.lastProject = projectPopulatedCards.name;
             console.log("(GET) - /projects/:projectName - Rendering project.ejs");
+            projectPopulatedCards.membership._boards.forEach(function(board) {
+              console.log("(GET) - /projects/:projectName - boards are ",board.name," id: ",board._id.toString());
+            })
             console.log("(GET) - /projects/:projectName - selectedBoardId is ", selectedBoardId);
             res.render('projects/project.ejs', {
               user : req.user,
