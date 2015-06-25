@@ -14,6 +14,7 @@ var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
+var favicon      = require('serve-favicon');
 
 var configDB = require('./config/database.js');
 var configRedis = require('./config/redis.js');
@@ -47,6 +48,8 @@ app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser()); // get information from html forms
 app.use(flash());
+
+app.use(favicon(__dirname + '/public/img/favicon.ico'));
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(express['static'](path.join(__dirname, 'public')));
