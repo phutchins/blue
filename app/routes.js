@@ -46,15 +46,25 @@ module.exports = function(app, passport) {
   // show the signup form
   app.get('/signup', function(req, res) {
       // render the page and pass in any flash data if it exists
-      res.render('signup.ejs', { message: req.flash('signupMessage') });
+      if (Admin.signupEnabled) {
+        res.render('signup.ejs', { message: req.flash('signupMessage') });
+      } else {
+        return res.send(404, "not found").end();
+      }
   });
 
   // process the signup form
-  app.post('/signup', passport.authenticate('local-signup', {
-      successRedirect : '/profile', // redirect to the secure profile section
-      failureRedirect : '/signup', // redirect back to the signup page if there is an error
-      failureFlash : true // allow flash messages
-  }));
+  app.post('/signup', function(req, res) {
+    if (Admin.signupEnabled) {
+      passport.authenticate('local-signup', {
+        successRedirect : '/profile', // redirect to the secure profile section
+        failureRedirect : '/signup', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
+      });
+    } else {
+      return res.send(410, "signup disabled").end();
+    }
+  });
 
   // we will want this protected so you have to be logged in to visit
   app.get('/profile', isLoggedIn, function(req, res) {
