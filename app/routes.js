@@ -5,7 +5,7 @@ require('../config/database');
 var URL = require('url');
 var Project = require('./models/project');
 var Board = require('./models/board');
-var Setting = require('./models/setting');
+//var Setting = require('./models/setting');
 var Card = require('./models/card');
 var Comment = require('./models/comment');
 var User = require('./models/user');
@@ -25,6 +25,7 @@ module.exports = function(app, passport) {
 
   // Authentication options page
   app.get('/auth', function(req, res) {
+    console.log("Requested '/auth'");
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
         signup = { enabled: false };
@@ -32,6 +33,7 @@ module.exports = function(app, passport) {
         signup.save();
       }
 
+      console.log("Rendering 'auth.ejs' - Signup is: " + signup.enabled);
       return res.render('auth.ejs', { signup: signup });
     });
   });
@@ -69,7 +71,7 @@ module.exports = function(app, passport) {
       } else {
         console.log("(1) signup is: ", signup);
 
-        // render the page and pass in any flash data if it exists
+      // render the page and pass in any flash data if it exists
         if (signup.enabled) {
           res.render('signup.ejs', { message: req.flash('signupMessage') });
         } else {
@@ -80,22 +82,24 @@ module.exports = function(app, passport) {
   });
 
   // process the signup form
-  app.post('/signup', function(req, res) {
-    Setting.findOne({ name: "signup" }).exec( function(err, signup) {
-      console.log("(2) signup is: ", signup);
-      if (signup.enabled) {
-        console.log("Signup is enabled.");
-        passport.authenticate('local-signup', {
+  // PROBLEM IS HERE. TAKE OUT FUNCTION!!!
+  //app.post('/signup', function(req, res) {
+  app.post('/signup', passport.authenticate('local-signup', {
+    //Setting.findOne({ name: "signup" }).exec( function(err, signup) {
+      //console.log("(2) signup is: ", signup);
+      //if (signup.enabled) {
+        //console.log("Signup is enabled.");
+        //passport.authenticate('local-signup', {
           successRedirect : '/profile', // redirect to the secure profile section
           failureRedirect : '/signup', // redirect back to the signup page if there is an error
           failureFlash : true // allow flash messages
-        });
-      } else {
-        console.log("Signup is disabled.");
-        return res.send(410, "signup disabled").end();
-      }
-    });
-  });
+        //});
+      //} else {
+      //  console.log("Signup is disabled.");
+      //  return res.send(410, "signup disabled").end();
+     // }
+    //});
+  }));
 
   // we will want this protected so you have to be logged in to visit
   app.get('/profile', isLoggedIn, function(req, res) {
