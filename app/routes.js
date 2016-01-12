@@ -7,6 +7,7 @@ var Project = require('./models/project');
 var Board = require('./models/board');
 //var Setting = require('./models/setting');
 var Card = require('./models/card');
+var Setting = require('./models/setting');
 var Comment = require('./models/comment');
 var User = require('./models/user');
 var Column = require('./models/column');
@@ -82,23 +83,10 @@ module.exports = function(app, passport) {
   });
 
   // process the signup form
-  // PROBLEM IS HERE. TAKE OUT FUNCTION!!!
-  //app.post('/signup', function(req, res) {
   app.post('/signup', passport.authenticate('local-signup', {
-    //Setting.findOne({ name: "signup" }).exec( function(err, signup) {
-      //console.log("(2) signup is: ", signup);
-      //if (signup.enabled) {
-        //console.log("Signup is enabled.");
-        //passport.authenticate('local-signup', {
-          successRedirect : '/profile', // redirect to the secure profile section
-          failureRedirect : '/signup', // redirect back to the signup page if there is an error
-          failureFlash : true // allow flash messages
-        //});
-      //} else {
-      //  console.log("Signup is disabled.");
-      //  return res.send(410, "signup disabled").end();
-     // }
-    //});
+    successRedirect : '/profile', // redirect to the secure profile section
+    failureRedirect : '/signup', // redirect back to the signup page if there is an error
+    failureFlash : true // allow flash messages
   }));
 
   // we will want this protected so you have to be logged in to visit
