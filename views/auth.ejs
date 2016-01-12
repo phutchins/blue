@@ -18,7 +18,11 @@
         <p>Login or Register with:</p>
 
         <a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
-        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
+        <% if ( signup.enabled ) { %>
+          <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
+        <% } else { %>
+          <a class="btn btn-default"><span class="fa fa-user"></span> Local Signup Disabled</a>
+        <% } %>
     </div>
 
 </div>

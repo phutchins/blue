@@ -37,7 +37,11 @@
 
     <hr>
 
+    <% if (signup.enabled) { %>
     <p>Need an account? <a href="/signup">Signup</a></p>
+    <% } else { %>
+    <p>Need an account? <a>Signup Disabled</a></p>
+    <% } %>
     <p>Or go <a href="/">home</a>.</p>
 
 </div>

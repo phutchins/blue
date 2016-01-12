@@ -5,7 +5,9 @@ require('../config/database');
 var URL = require('url');
 var Project = require('./models/project');
 var Board = require('./models/board');
+//var Setting = require('./models/setting');
 var Card = require('./models/card');
+var Setting = require('./models/setting');
 var Comment = require('./models/comment');
 var User = require('./models/user');
 var Column = require('./models/column');
@@ -24,14 +26,31 @@ module.exports = function(app, passport) {
 
   // Authentication options page
   app.get('/auth', function(req, res) {
-    res.render('auth.ejs')
+    console.log("Requested '/auth'");
+    Setting.findOne({ name: "signup" }).exec( function(err, signup) {
+      if (signup == null) {
+        signup = { enabled: false };
+        var signup = new Setting({ name: 'signup', enabled: false });
+        signup.save();
+      }
+
+      console.log("Rendering 'auth.ejs' - Signup is: " + signup.enabled);
+      return res.render('auth.ejs', { signup: signup });
+    });
   });
 
   // show the login form
   app.get('/login', function(req, res) {
+    Setting.findOne({ name: "signup" }).exec( function(err, signup) {
+      if (signup == null) {
+        signup = { enabled: false };
+        var signup = new Setting({ name: 'signup', enabled: false });
+        signup.save();
+      }
 
       // render the page and pass in any flash data if it exists
-      res.render('login.ejs', { message: req.flash('loginMessage') });
+      res.render('login.ejs', { message: req.flash('loginMessage'), signup: signup });
+    });
   });
 
   // process the login form
@@ -45,32 +64,37 @@ module.exports = function(app, passport) {
 
   // show the signup form
   app.get('/signup', function(req, res) {
-      // render the page and pass in any flash data if it exists
-      if (Admin.signupEnabled) {
-        res.render('signup.ejs', { message: req.flash('signupMessage') });
+    Setting.findOne({ name: "signup" }).exec( function(err, signup) {
+      if (signup == null) {
+        var signup = new Setting({ name: 'signup', enabled: false });
+        signup.save();
+        res.send(404, "registration is currently disabled 1").end();
       } else {
-        return res.send(404, "not found").end();
+        console.log("(1) signup is: ", signup);
+
+      // render the page and pass in any flash data if it exists
+        if (signup.enabled) {
+          res.render('signup.ejs', { message: req.flash('signupMessage') });
+        } else {
+          res.send(404, "registration is currently disabled 2").end();
+        }
       }
+    });
   });
 
   // process the signup form
-  app.post('/signup', function(req, res) {
-    if (Admin.signupEnabled) {
-      passport.authenticate('local-signup', {
-        successRedirect : '/profile', // redirect to the secure profile section
-        failureRedirect : '/signup', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
-      });
-    } else {
-      return res.send(410, "signup disabled").end();
-    }
-  });
+  app.post('/signup', passport.authenticate('local-signup', {
+    successRedirect : '/profile', // redirect to the secure profile section
+    failureRedirect : '/signup', // redirect back to the signup page if there is an error
+    failureFlash : true // allow flash messages
+  }));
 
   // we will want this protected so you have to be logged in to visit
   app.get('/profile', isLoggedIn, function(req, res) {
-      res.render('profile.ejs', {
-          user : req.user // get the user out of session and pass to template
-      });
+    console.log("Trying to render profile page");
+    res.render('profile.ejs', {
+        user : req.user // get the user out of session and pass to template
+    });
   });
 
   // logout function
