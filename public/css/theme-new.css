@@ -189,6 +189,12 @@ text-decoration: none;
   text-overflow: ellipsis;
   word-wrap: break-word;
 }
+.board {
+  white-space: nowrap;
+  width: 100%;
+  overflow-x: scroll;
+}
+
 .card {
   width: 100%;
   margin: 0 1em 1em 0;
@@ -196,6 +202,7 @@ text-decoration: none;
   background: #fff;
   border-radius: 3px;
   list-style-type: none;
+  white-space: normal;
 }
 .column {
   list-style-type: none;
