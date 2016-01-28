@@ -73,6 +73,8 @@ body {
   padding: 10px;
 }
 .board {
+  overflow: scroll;
+  white-space: nowrap;
 }
 .add-card {
   border-top-left-radius: 0;
