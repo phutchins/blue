@@ -30,7 +30,7 @@ module.exports = function(app, passport) {
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
         signup = { enabled: false };
-        var signup = new Setting({ name: 'signup', enabled: false });
+        var signup = new Setting({ name: 'signup', enabled: true });
         signup.save();
       }
 
@@ -44,7 +44,7 @@ module.exports = function(app, passport) {
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
         signup = { enabled: false };
-        var signup = new Setting({ name: 'signup', enabled: false });
+        var signup = new Setting({ name: 'signup', enabled: true });
         signup.save();
       }
 
@@ -66,7 +66,7 @@ module.exports = function(app, passport) {
   app.get('/signup', function(req, res) {
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
-        var signup = new Setting({ name: 'signup', enabled: false });
+        var signup = new Setting({ name: 'signup', enabled: true });
         signup.save();
         res.send(404, "registration is currently disabled 1").end();
       } else {
