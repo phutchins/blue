@@ -103,6 +103,16 @@ module.exports = function(app, passport) {
       res.redirect('/');
   });
 
+// - ADMIN CONTROLS - //
+  app.get('/admin', isLoggedIn, function(req, res) {
+    console.log("Trying to render Admin page");
+	  res.render('admin.ejs', {
+      user : req.user
+	  });
+  });
+
+
+
 // - PROJECTS - //
   // Projects View
   app.get('/projects', isLoggedIn, function(req, res) {
