@@ -111,7 +111,11 @@ module.exports = function(app, passport) {
 	  });
   });
 
+  app.post('/admin/localSignup', isLoggedIn, function(req, res) {  
+    console.log("submiting checked boxes");
+    // get value of the checkbox
 
+  });
 
 // - PROJECTS - //
   // Projects View
