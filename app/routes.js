@@ -113,8 +113,9 @@ module.exports = function(app, passport) {
 
   app.post('/admin/localSignup', isLoggedIn, function(req, res) {  
     console.log("submiting checked boxes");
+    var localSignupCheck = document.getElementById("local_signup_check");
+    console.log("localsignup is " + localSignupCheck.checked());
     // get value of the checkbox
-
   });
 
 // - PROJECTS - //
