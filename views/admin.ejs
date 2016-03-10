@@ -15,14 +15,17 @@
   <div class="well">
     <div class="row">
       <div class="col-md-6">
-        <form action="/admin/localSignup" method="post">
+        <form action="/admin/:local_signup_check" method="get">
           <table class="table">
             <tr>
               <th>Local Signup</th>
-              <th><input type="checkbox" id="local_signup_check" ></th>
+              <th>
+                <input type="checkbox" name="local_signup_check" value="1" />
+                <input type="hidden" name="local_signup_check" value="0" />
+              </th>
             </tr>
             <tr>
-              <th><input type="submit" value="Apply"></th>
+              <th><button type="submit">Apply</button></th>
             </tr>
           </table>
         </form>

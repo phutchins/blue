@@ -111,10 +111,12 @@ module.exports = function(app, passport) {
 	  });
   });
 
-  app.post('/admin/localSignup', isLoggedIn, function(req, res) {  
-    console.log("submiting checked boxes");
-    var localSignupCheck = document.getElementById("local_signup_check");
-    console.log("localsignup is " + localSignupCheck.checked());
+  app.get('/admin/:local_signup_check', isLoggedIn, function(req, res) { 
+    var signup = req.param('local_signup_check').split('?')[0]
+    console.log(JSON.stringify(signup));
+    res.render('admin.ejs', {
+      user : req.user
+    });
     // get value of the checkbox
   });
 
