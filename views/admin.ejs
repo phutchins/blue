@@ -5,6 +5,7 @@
   <title>Admin</title>
 </head>
 <body>
+
   <% include header %>
   <% if( user.membership.admin == true) { %>
 
@@ -15,13 +16,12 @@
   <div class="well">
     <div class="row">
       <div class="col-md-6">
-        <form action="/admin/:local_signup_check" method="get">
+        <form action="/admin" method="post">
           <table class="table">
             <tr>
               <th>Local Signup</th>
               <th>
-                <input type="checkbox" name="local_signup_check" value="1" />
-                <input type="hidden" name="local_signup_check" value="0" />
+                <input type="checkbox" name="local_signup_check" />
               </th>
             </tr>
             <tr>

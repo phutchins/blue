@@ -111,9 +111,14 @@ module.exports = function(app, passport) {
 	  });
   });
 
-  app.get('/admin/:local_signup_check', isLoggedIn, function(req, res) { 
-    var signup = req.param('local_signup_check').split('?')[0]
-    console.log(JSON.stringify(signup));
+  app.post('/admin', isLoggedIn, function(req, res) { 
+    var signup = req.body.local_signup_check;
+    console.log(signup);
+    if (signup == "on") {
+      console.log("enable local Signup");
+    } else {
+      console.log("disabling local Signup");
+    }
     res.render('admin.ejs', {
       user : req.user
     });
