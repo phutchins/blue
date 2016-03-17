@@ -116,8 +116,16 @@ module.exports = function(app, passport) {
     console.log(signup);
     if (signup == "on") {
       console.log("enable local Signup");
+      Setting.findOneAndUpdate(
+        { "name" : "signup" },
+        { $set: { "enabled" : "true" }}, { new: true }, function( err, doc ) {}
+      );
     } else {
       console.log("disabling local Signup");
+      Setting.findOneAndUpdate(
+        { "name" : "signup" },
+        { $set: { "enabled" : "false" }}, { new: true }, function( err, doc ) {}
+        );
     }
     res.render('admin.ejs', {
       user : req.user
