@@ -106,9 +106,18 @@ module.exports = function(app, passport) {
 // - ADMIN CONTROLS - //
   app.get('/admin', isLoggedIn, function(req, res) {
     console.log("Trying to render Admin page");
+
+    var settings;
+    Setting.getAllSettings(data, function(err, settings) {
+      if (err) {
+        throw err;
+      }
+    });
 	  res.render('admin.ejs', {
-      user : req.user
+      user : req.user,
+      settings : settings
 	  });
+    console.log(settings);
   });
 
   app.post('/admin', isLoggedIn, function(req, res) { 
