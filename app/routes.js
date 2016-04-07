@@ -107,22 +107,17 @@ module.exports = function(app, passport) {
   app.get('/admin', isLoggedIn, function(req, res) {
     console.log("Trying to render Admin page");
 
-    var settings;
-    Setting.getAllSettings(data, function(err, settings) {
-      if (err) {
-        throw err;
-      }
+    Setting.getAllSettings(function(settings) {
+      res.render('admin.ejs', {
+        user : req.user,
+        settings : settings
+      });
     });
-	  res.render('admin.ejs', {
-      user : req.user,
-      settings : settings
-	  });
-    console.log(settings);
   });
 
   app.post('/admin', isLoggedIn, function(req, res) { 
     var signup = req.body.local_signup_check;
-    console.log(signup);
+    console.log("Signup is " + signup);
     if (signup == "on") {
       console.log("enable local Signup");
       Setting.findOneAndUpdate(
@@ -136,8 +131,11 @@ module.exports = function(app, passport) {
         { $set: { "enabled" : "false" }}, { new: true }, function( err, doc ) { if (err) console.log(err); }
         );
     }
-    res.render('admin.ejs', {
-      user : req.user
+    Setting.getAllSettings(function(settings) {
+      res.render('admin.ejs', {
+        user : req.user,
+        settings : settings
+      });
     });
     // get value of the checkbox
   });

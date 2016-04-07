@@ -7,11 +7,11 @@ var settingSchema = new Schema({
   value: { type: String, default: null },
 });
 
-settingSchema.statics.getAllSettings = function getAllSettings(data, callback) {
+settingSchema.statics.getAllSettings = function getAllSettings(callback) {
   var self = this;
   var settinglist = {};
   this.find({}, function(err, settings) {
-    if (err) { return logger.error("[GET ALL SETTINGS] Error getting all users: ", err) }
+    if (err) { return logger.error("[GET ALL SETTINGS] Error getting all settings: ", err) }
     settings.forEach(function(setting) {
       self.sanitize(setting, function(sanitizedSetting) {
         settinglist[setting.name] = sanitizedSetting;

@@ -7,7 +7,7 @@
 <body>
 
   <% include header %>
-  <% if( user.membership.admin == true) { %>
+  <% if( user.membership.admin) { %>
 
 <div class="container">
   <div class="page-header text-center">
@@ -21,7 +21,11 @@
             <tr>
               <th>Local Signup</th>
               <th>
-                <input type="checkbox" id="check_signup" name="local_signup_check" />
+                <% if (settings.signup.enabled) { %>
+                  <input type="checkbox" id="check_signup" name="local_signup_check" checked />
+                <% } else { %>
+                  <input type="checkbox" id="check_signup" name="local_signup_check" />
+                <% } %>
               </th>
             </tr>
             <tr>
