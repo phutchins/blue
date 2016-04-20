@@ -1,0 +1,50 @@
+<!-- views/admin.ejs -->
+<!doctype html>
+<html>
+<head>
+  <title>Admin</title>
+</head>
+<body>
+
+  <% include header %>
+  <% if( user.membership.admin) { %>
+
+<div class="container">
+  <div class="page-header text-center">
+    <h1><span class="fa fa-key"></span> Admin Controls</h1>
+  </div>
+  <div class="well">
+    <div class="row">
+      <div class="col-md-6">
+        <form action="/admin" method="post">
+          <table class="table">
+            <tr>
+              <th>Local Signup</th>
+              <th>
+                <% if (settings.signup.enabled) { %>
+                  <input type="checkbox" id="check_signup" name="local_signup_check" checked />
+                <% } else { %>
+                  <input type="checkbox" id="check_signup" name="local_signup_check" />
+                <% } %>
+              </th>
+            </tr>
+            <tr>
+              <th><button type="submit">Apply</button></th>
+            </tr>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <% } else { %>
+
+<div class="container">
+  <div class="page-header text-center">
+    <h1>You do not have admin privileges</h1>
+  </div>
+</div>
+
+  <% } %>
+  <% include footer %>

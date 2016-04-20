@@ -30,7 +30,7 @@ module.exports = function(app, passport) {
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
         signup = { enabled: false };
-        var signup = new Setting({ name: 'signup', enabled: false });
+        var signup = new Setting({ name: 'signup', enabled: true });
         signup.save();
       }
 
@@ -44,7 +44,7 @@ module.exports = function(app, passport) {
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
         signup = { enabled: false };
-        var signup = new Setting({ name: 'signup', enabled: false });
+        var signup = new Setting({ name: 'signup', enabled: true });
         signup.save();
       }
 
@@ -66,7 +66,7 @@ module.exports = function(app, passport) {
   app.get('/signup', function(req, res) {
     Setting.findOne({ name: "signup" }).exec( function(err, signup) {
       if (signup == null) {
-        var signup = new Setting({ name: 'signup', enabled: false });
+        var signup = new Setting({ name: 'signup', enabled: true });
         signup.save();
         res.send(404, "registration is currently disabled 1").end();
       } else {
@@ -101,6 +101,43 @@ module.exports = function(app, passport) {
   app.get('/logout', function(req, res) {
       req.logout();
       res.redirect('/');
+  });
+
+// - ADMIN CONTROLS - //
+  app.get('/admin', isLoggedIn, function(req, res) {
+    console.log("Trying to render Admin page");
+
+    Setting.getAllSettings(function(settings) {
+      res.render('admin.ejs', {
+        user : req.user,
+        settings : settings
+      });
+    });
+  });
+
+  app.post('/admin', isLoggedIn, function(req, res) { 
+    var signup = req.body.local_signup_check;
+    console.log("Signup is " + signup);
+    if (signup == "on") {
+      console.log("enable local Signup");
+      Setting.findOneAndUpdate(
+        { "name" : "signup" },
+        { $set: { "enabled" : "true" }}, { new: true }, function( err, doc ) { if (err) console.log(err); }
+      );
+    } else {
+      console.log("disabling local Signup");
+      Setting.findOneAndUpdate(
+        { "name" : "signup" },
+        { $set: { "enabled" : "false" }}, { new: true }, function( err, doc ) { if (err) console.log(err); }
+        );
+    }
+    Setting.getAllSettings(function(settings) {
+      res.render('admin.ejs', {
+        user : req.user,
+        settings : settings
+      });
+    });
+    // get value of the checkbox
   });
 
 // - PROJECTS - //

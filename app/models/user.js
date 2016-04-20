@@ -30,7 +30,10 @@ var userSchema = mongoose.Schema({
         name         : String
     },
     session          : {
-      lastViewed     : String
+        lastViewed   : String
+    },
+    membership       : {
+        admin        : Boolean
     }
 
 });

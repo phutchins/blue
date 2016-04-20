@@ -18,7 +18,14 @@
         </span>
       </div>
     </div>
-    <div class="header-user">
+    <div class="header-user"> 
+      <% if (user.membership.admin == true) { %>	
+      <a href="/admin">
+        <span class="header-button">
+          <span>Admin</span>
+        </span>
+      </a>
+	  <% } %>
       <a href="/profile">
         <span class="header-user-button header-button">
           <span class="fa fa-user"></span>
