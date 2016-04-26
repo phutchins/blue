@@ -316,7 +316,6 @@ module.exports = function(app, passport) {
         if (err) console.log(err);
       }
     )
-    res.redirect( '/projects/' + req.body.projectName );
   });
 
   // change this to /cards/:cardId with app.delete
