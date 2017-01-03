@@ -115,7 +115,7 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.post('/admin', isLoggedIn, function(req, res) { 
+  app.post('/admin', isLoggedIn, function(req, res) {
     var signup = req.body.local_signup_check;
     console.log("Signup is " + signup);
     if (signup == "on") {
@@ -351,6 +351,7 @@ module.exports = function(app, passport) {
       { $set: { "name": req.param("name"), "description": req.param("description") }, upsert: true },
       function(err, board) {
         if (err) console.log(err);
+        res.redirect( '/projects/' + req.body.projectName );
       }
     )
   });
